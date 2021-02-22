@@ -75,17 +75,6 @@ CMAKE_BINARY_DIR = /home/alejandro/Desktop/Vision/practica1/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/local/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -96,6 +85,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/local/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -130,84 +130,71 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named CameraBlur
+# Target rules for targets named App
 
 # Build rule for target.
-CameraBlur: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CameraBlur
-.PHONY : CameraBlur
+App: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 App
+.PHONY : App
 
 # fast build rule for target.
-CameraBlur/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur.dir/build.make CMakeFiles/CameraBlur.dir/build
-.PHONY : CameraBlur/fast
+App/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/build
+.PHONY : App/fast
 
-#=============================================================================
-# Target rules for targets named CameraBlur2
+App.o: App.cpp.o
 
-# Build rule for target.
-CameraBlur2: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CameraBlur2
-.PHONY : CameraBlur2
-
-# fast build rule for target.
-CameraBlur2/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur2.dir/build.make CMakeFiles/CameraBlur2.dir/build
-.PHONY : CameraBlur2/fast
-
-CameraBlur.o: CameraBlur.cpp.o
-
-.PHONY : CameraBlur.o
+.PHONY : App.o
 
 # target to build an object file
-CameraBlur.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur.dir/build.make CMakeFiles/CameraBlur.dir/CameraBlur.cpp.o
-.PHONY : CameraBlur.cpp.o
+App.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/App.cpp.o
+.PHONY : App.cpp.o
 
-CameraBlur.i: CameraBlur.cpp.i
+App.i: App.cpp.i
 
-.PHONY : CameraBlur.i
+.PHONY : App.i
 
 # target to preprocess a source file
-CameraBlur.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur.dir/build.make CMakeFiles/CameraBlur.dir/CameraBlur.cpp.i
-.PHONY : CameraBlur.cpp.i
+App.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/App.cpp.i
+.PHONY : App.cpp.i
 
-CameraBlur.s: CameraBlur.cpp.s
+App.s: App.cpp.s
 
-.PHONY : CameraBlur.s
+.PHONY : App.s
 
 # target to generate assembly for a file
-CameraBlur.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur.dir/build.make CMakeFiles/CameraBlur.dir/CameraBlur.cpp.s
-.PHONY : CameraBlur.cpp.s
+App.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/App.cpp.s
+.PHONY : App.cpp.s
 
-CameraBlur2.o: CameraBlur2.cpp.o
+Filters.o: Filters.cpp.o
 
-.PHONY : CameraBlur2.o
+.PHONY : Filters.o
 
 # target to build an object file
-CameraBlur2.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur2.dir/build.make CMakeFiles/CameraBlur2.dir/CameraBlur2.cpp.o
-.PHONY : CameraBlur2.cpp.o
+Filters.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/Filters.cpp.o
+.PHONY : Filters.cpp.o
 
-CameraBlur2.i: CameraBlur2.cpp.i
+Filters.i: Filters.cpp.i
 
-.PHONY : CameraBlur2.i
+.PHONY : Filters.i
 
 # target to preprocess a source file
-CameraBlur2.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur2.dir/build.make CMakeFiles/CameraBlur2.dir/CameraBlur2.cpp.i
-.PHONY : CameraBlur2.cpp.i
+Filters.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/Filters.cpp.i
+.PHONY : Filters.cpp.i
 
-CameraBlur2.s: CameraBlur2.cpp.s
+Filters.s: Filters.cpp.s
 
-.PHONY : CameraBlur2.s
+.PHONY : Filters.s
 
 # target to generate assembly for a file
-CameraBlur2.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur2.dir/build.make CMakeFiles/CameraBlur2.dir/CameraBlur2.cpp.s
-.PHONY : CameraBlur2.cpp.s
+Filters.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/Filters.cpp.s
+.PHONY : Filters.cpp.s
 
 # Help Target
 help:
@@ -217,14 +204,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... CameraBlur"
-	@echo "... CameraBlur2"
-	@echo "... CameraBlur.o"
-	@echo "... CameraBlur.i"
-	@echo "... CameraBlur.s"
-	@echo "... CameraBlur2.o"
-	@echo "... CameraBlur2.i"
-	@echo "... CameraBlur2.s"
+	@echo "... App"
+	@echo "... App.o"
+	@echo "... App.i"
+	@echo "... App.s"
+	@echo "... Filters.o"
+	@echo "... Filters.i"
+	@echo "... Filters.s"
 .PHONY : help
 
 

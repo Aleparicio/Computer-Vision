@@ -5,8 +5,6 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 set (CMAKE_CXX_STANDARD 11)
 
-add_executable( CameraBlur CameraBlur.cpp )
-target_link_libraries( CameraBlur ${OpenCV_LIBS} )
-
-add_executable( CameraBlur2 CameraBlur2.cpp )
-target_link_libraries( CameraBlur2 ${OpenCV_LIBS} )
+set(SOURCES App.cpp Filters.cpp Filters.h)
+add_executable( App ${SOURCES})
+target_link_libraries( App ${OpenCV_LIBS} )

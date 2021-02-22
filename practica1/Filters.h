@@ -3,11 +3,12 @@
 
 #include <opencv2/opencv.hpp>
 
-//enum eqType { EQHISTO, CLAHE};
+enum filtro {CONTRASTE, ALIEN, POSTER, DISTORSION, EQHISTO, CLAHE};
 
 void contrastAdjustment(cv::Mat& image, float gain, float sesgo);
 
-//void equalizeImage(cv::Mat& image);
+void equalizeHist(cv::Mat& image);
 
+void equalizeCLAHE(cv::Mat& image, float clipLimit = 3.0);
 
 #endif

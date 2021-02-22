@@ -72,8 +72,7 @@ CMAKE_BINARY_DIR = /home/alejandro/Desktop/Vision/practica1/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/CameraBlur.dir/all
-all: CMakeFiles/CameraBlur2.dir/all
+all: CMakeFiles/App.dir/all
 
 .PHONY : all
 
@@ -83,64 +82,36 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/CameraBlur.dir/clean
-clean: CMakeFiles/CameraBlur2.dir/clean
+clean: CMakeFiles/App.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/CameraBlur.dir
+# Target rules for target CMakeFiles/App.dir
 
 # All Build rule for target.
-CMakeFiles/CameraBlur.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur.dir/build.make CMakeFiles/CameraBlur.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur.dir/build.make CMakeFiles/CameraBlur.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/alejandro/Desktop/Vision/practica1/build/CMakeFiles --progress-num=1,2 "Built target CameraBlur"
-.PHONY : CMakeFiles/CameraBlur.dir/all
+CMakeFiles/App.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/alejandro/Desktop/Vision/practica1/build/CMakeFiles --progress-num=1,2,3 "Built target App"
+.PHONY : CMakeFiles/App.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/CameraBlur.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/alejandro/Desktop/Vision/practica1/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/CameraBlur.dir/all
+CMakeFiles/App.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/alejandro/Desktop/Vision/practica1/build/CMakeFiles 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/App.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/alejandro/Desktop/Vision/practica1/build/CMakeFiles 0
-.PHONY : CMakeFiles/CameraBlur.dir/rule
+.PHONY : CMakeFiles/App.dir/rule
 
 # Convenience name for target.
-CameraBlur: CMakeFiles/CameraBlur.dir/rule
+App: CMakeFiles/App.dir/rule
 
-.PHONY : CameraBlur
-
-# clean rule for target.
-CMakeFiles/CameraBlur.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur.dir/build.make CMakeFiles/CameraBlur.dir/clean
-.PHONY : CMakeFiles/CameraBlur.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/CameraBlur2.dir
-
-# All Build rule for target.
-CMakeFiles/CameraBlur2.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur2.dir/build.make CMakeFiles/CameraBlur2.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur2.dir/build.make CMakeFiles/CameraBlur2.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/alejandro/Desktop/Vision/practica1/build/CMakeFiles --progress-num=3,4 "Built target CameraBlur2"
-.PHONY : CMakeFiles/CameraBlur2.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/CameraBlur2.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/alejandro/Desktop/Vision/practica1/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/CameraBlur2.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/alejandro/Desktop/Vision/practica1/build/CMakeFiles 0
-.PHONY : CMakeFiles/CameraBlur2.dir/rule
-
-# Convenience name for target.
-CameraBlur2: CMakeFiles/CameraBlur2.dir/rule
-
-.PHONY : CameraBlur2
+.PHONY : App
 
 # clean rule for target.
-CMakeFiles/CameraBlur2.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CameraBlur2.dir/build.make CMakeFiles/CameraBlur2.dir/clean
-.PHONY : CMakeFiles/CameraBlur2.dir/clean
+CMakeFiles/App.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/App.dir/build.make CMakeFiles/App.dir/clean
+.PHONY : CMakeFiles/App.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

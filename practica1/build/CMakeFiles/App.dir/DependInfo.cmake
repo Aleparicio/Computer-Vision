@@ -4,7 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/alejandro/Desktop/Vision/practica1/CameraBlur.cpp" "/home/alejandro/Desktop/Vision/practica1/build/CMakeFiles/CameraBlur.dir/CameraBlur.cpp.o"
+  "/home/alejandro/Desktop/Vision/practica1/App.cpp" "/home/alejandro/Desktop/Vision/practica1/build/CMakeFiles/App.dir/App.cpp.o"
+  "/home/alejandro/Desktop/Vision/practica1/Filters.cpp" "/home/alejandro/Desktop/Vision/practica1/build/CMakeFiles/App.dir/Filters.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

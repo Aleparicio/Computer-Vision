@@ -1,94 +1,123 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include "Filters.h"
 #include <iostream>
 #include <iomanip>
 
+using namespace std;
+
+const std::string window_name = "Efecto";
+
 void rotulos(){
-    cout << "             PRUEBAS PARA EL MODULO TIPO PERSONA" << endl;
-	cout << "             ===================================" << endl << endl;
-	cout << "    Seleccione la operacion (0 para terminar):" << endl;
-	cout << "		1.- Definir persona: " << endl;
-	cout << "		2.- Fecha nacimiento: " << endl;
-	cout << "		3.- Es mujer " << endl << endl;
+    cout << endl << endl << " SELECCIONE EL FILTRO A EMPLEAR" << endl;
+	cout << " ===================================================" << endl;
+	cout << "   Filtro a aplicar (0 para terminar):" << endl;
+	cout << "   1.- Contraste y/o equalización del histograma" << endl;
+	cout << "   2.- Alien " << endl;
+	cout << "   3.- Póster " << endl;
+    cout << "   4.- Distorsión " << endl;
+    cout << "Para terminar la aplicación de un filtro pulsar cualquier tecla." << endl;
+	cout << "Seleccionar filtro: " << flush;
 }
 
-int main() {
+void rotulosEqContraste(){
+    cout << endl << endl << " SELECCIONAR SUBTIPO (0 para terminar)" << endl;
+	cout << " =================================================" << endl;
+	cout << "   1 - Ampliación contraste" << endl;
+	cout << "   2 - Equalización Histograma " << endl;
+	cout << "   3 - CLAHE " << endl;
+    cout << "Para terminar la aplicación de un filtro pulsar cualquier tecla." << endl;
+	cout << "Seleccionar filtro: " << flush;
+}
+
+int procesarVideo(const filtro filter, float arg1Filter = 1.0, float arg2Filter = 0.0) {
 
     cv::VideoCapture cap;
     if (!cap.open(0)) {
-        std::cout << "Failed to connect to cam" << std::endl;
+        std::cout << "Failed to connect to camera." << std::endl;
         return 0;
     }
 
+    cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);
+    // cv::createTrackbar("Blur", "Gaussian Blur", &val, ALPHA_SLIDER_MAX, NULL);
 
-	int operacion;
-    rotulos();
-
-	cout << "Operacion (necesario definir una persona): " << flush;
-	cin >> operacion;
-	while(operacion != 0){
-		if (operacion == 1){
-			int d, m , aa;
-			cout << "Inserte dia mes y anyo: " << flush;
-			cin >> d >> m >> aa;
-			cout << "¿Es mujer? (true o false): " << flush;
-			bool esMujerD;
-			cin >> boolalpha >> esMujerD;
-		    p = definirPersona(d,m,aa,esMujerD);
-			int fecha=nacido(p);
-			cout << fecha << endl;
-			if(esMujer(p)){
-				cout << "Es mujer." << endl << endl;
-			}
-			else{
-				cout << "No es mujer" << endl << endl;
-			}
-		}
-		if (operacion == 2){
-			int fechan = nacido(p);
-			cout << "Esta persona ha nacido el dia (aaaammdd): " << fechan << endl << endl;
-		}
-		if (operacion == 3){
-			bool loes = esMujer(p);
-			if(loes){
-				cout << "Esta persona es una mujer." << endl << endl;
-			}
-			else{
-				cout << "Esta persona no es una mujer." << endl << endl;
-			}
-		}
-		rotulos();
-		cout << "Operacion (necesario definir una persona): " << flush;
-		cin >> operacion;
-	}
-    return 0;
     while (true) {
-        cv::Mat frame;
 
+        cv::Mat frame;
         cap >> frame;
         if (frame.empty()) // end of video stream
             break;
 
-        // Procesar el frame
-        if (val > 0) {
-            cv::GaussianBlur(frame, frame, cv::Size(0, 0), ((double)val)/10); // aplicar filtro gaussiano
+        if (filter == CONTRASTE) { 
+            contrastAdjustment(frame, arg1Filter, arg2Filter);
+        } else if (filter == EQHISTO) {
+            equalizeHist(frame);
+        } else if (filter == CLAHE) {
+            equalizeCLAHE(frame, arg1Filter);
+        } else if (filter == ALIEN) {
+            //cv::imshow(window_name, frame);
+        } else if (filter == POSTER) {
+            //cv::imshow(window_name, frame);
+        } else if (filter == DISTORSION) {
+            //cv::imshow(window_name, frame);
         }
 
-        std::string label = "amount: " + std::to_string(val) + "%";
-        cv::putText(frame, label, cv::Point(20, 30), cv::FONT_HERSHEY_PLAIN, 2.0, CV_RGB(0,255,0), 2.0);
-
-        cv::imshow("Gaussian Blur", frame);
-        // if(cv::waitKey(10) == 27) // stop capturing when key is pressed
-        // if(cv::waitKey(10) != -1) // stop capturing when key is pressed
+        cv::imshow(window_name, frame);
         if(cv::waitKey(10) >= 0) // stop capturing when key is pressed
             break;
     }
 
-    // cv::destroyAllWindows();
+    cv::destroyAllWindows();
+    return 1;
+}
 
-    // the camera will be closed automatically upon exit
-    // wtr.release();
-    // cap.close();
+int main() {
+
+	int operacion;
+    rotulos();
+
+	std::cin >> operacion;
+	while(operacion != 0){
+
+		if (operacion == 1){
+			// Invocar Contraste y/o equalización del histograma
+            rotulosEqContraste();
+            std::cin >> operacion;
+            if(operacion == 1){ 
+                cout << "Introduce ganancia: ";
+                float ganancia = 0.0, sesgo = 0.0;
+                std::cin >> ganancia;
+                cout << "Introduce sesgo: ";
+                std::cin >> sesgo;
+                procesarVideo(CONTRASTE, ganancia, sesgo); 
+            }
+            else if(operacion == 2){ 
+                procesarVideo(EQHISTO); 
+            }
+            else if(operacion == 3){ 
+                cout << "Introduce clip limit: ";
+                float clipLimit = 0.0;
+                std::cin >> clipLimit;
+                procesarVideo(CLAHE, clipLimit); 
+            }
+            else { break; }
+		}
+		if (operacion == 2){
+            // Invocar Alien
+            procesarVideo(ALIEN);
+		}
+		if (operacion == 3){
+			// Invocar póster
+            procesarVideo(POSTER);
+		}
+        if (operacion == 4){
+			// Invocar Distorsión
+            procesarVideo(DISTORSION);
+		}
+
+        rotulos();
+		std::cin >> operacion;
+	}
     return 0;
 }
