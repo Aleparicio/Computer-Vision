@@ -3,8 +3,8 @@ project( DisplayImage )
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
-set(SOURCES App.cpp Filters.cpp Filters.h)
+set(SOURCES App.cpp Filters.cpp)
 add_executable( App ${SOURCES})
 target_link_libraries( App ${OpenCV_LIBS} )
