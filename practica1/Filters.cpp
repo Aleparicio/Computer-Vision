@@ -2,34 +2,42 @@
 
 // Contrast
 
-Contrast::Contrast(std::string winname) {
-    gain = 0;
-    bias = 0;
-    cv::createTrackbar("Gain", winname, &gain, MAX_GAIN, NULL);
-    cv::createTrackbar("Bias", winname, &bias, MAX_BIAS, NULL);
-}
-
 void Contrast::apply(cv::Mat& img) const {
     cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
     img = gain * img;
     img = img + bias;
 }
 
-// Histogram Equalization
+void Contrast::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(180);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("Gain");
+        cvui::trackbar(settings.width() - 20, &gain, 5.0f, 150.0f);
+        cvui::space(20);
+        cvui::text("Bias");
+        cvui::trackbar(settings.width() - 20, &bias, 80.0f, 300.0f);
+    }
+    settings.end();
+}
 
-HistogramEqualization::HistogramEqualization(std::string winname) {}
+// Histogram Equalization
 
 void HistogramEqualization::apply(cv::Mat& image) const {
     cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
     cv::equalizeHist(image, image);
 }
 
-// CLAHE
-
-CLAHE::CLAHE(std::string winname) {
-    clipLimit = 0;
-    cv::createTrackbar("Clip limit", winname, &clipLimit, MAX_CLIP_LIMIT, NULL);
+void HistogramEqualization::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(100);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("No settings!");
+    }
+    settings.end();
 }
+
+// CLAHE
 
 void CLAHE::apply(cv::Mat& image) const {
     cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
@@ -38,12 +46,17 @@ void CLAHE::apply(cv::Mat& image) const {
     clahe->apply(image, image);
 }
 
-// Posterize
-
-Posterization::Posterization(std::string winname) {
-    numColors = 1;
-    cv::createTrackbar("Colors", winname, &numColors, MAX_NUM_COLORS, NULL);
+void CLAHE::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(100);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("Clip Limit");
+        cvui::trackbar(settings.width() - 20, &clipLimit, 0.0f, 25.0f);
+    }
+    settings.end();
 }
+
+// Posterize
 
 int Posterization::reduce(int value, int numColors) const {
     // Size of each interval
@@ -71,22 +84,54 @@ void Posterization::apply(cv::Mat& image) const {
 //     }
 // }
 
-// Alien
-Alien::Alien(std::string winname) {
-    R = G = B = alpha = 0;
-    cv::createTrackbar("R", winname, &R, 255, NULL);
-    cv::createTrackbar("G", winname, &G, 255, NULL);
-    cv::createTrackbar("B", winname, &B, 255, NULL);
-    cv::createTrackbar("alpha", winname, &alpha, 255, NULL);
+void Posterization::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(100);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("Number of colors");
+        cvui::trackbar(settings.width() - 20, &numColors, 1, 25, 1, "%.0Lf", cvui::TRACKBAR_DISCRETE);
+    }
+    settings.end();
 }
+
+// Alien
 
 void Alien::apply(cv::Mat& img) const {
 }
 
-// Distortion
-
-Distortion::Distortion(std::string winname) {
+void Alien::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(350);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("R");
+        cvui::trackbar(settings.width() - 20, &R, 0, 255, 1, "%.0Lf");
+        cvui::space(20);
+        cvui::text("G");
+        cvui::trackbar(settings.width() - 20, &G, 0, 255, 1, "%.0Lf");
+        cvui::space(20);
+        cvui::text("B");
+        cvui::trackbar(settings.width() - 20, &B, 0, 255, 1, "%.0Lf");
+        cvui::space(20);
+        cvui::text("Alpha");
+        cvui::trackbar(settings.width() - 20, &alpha, 0, 255, 1, "%.0Lf");
+    }
+    settings.end();
 }
 
+// Distortion
+
 void Distortion::apply(cv::Mat& img) const {
+}
+
+void Distortion::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(180);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("k1");
+        cvui::trackbar(settings.width() - 20, &k1, 5.0f, 150.0f);
+        cvui::space(20);
+        cvui::text("k2");
+        cvui::trackbar(settings.width() - 20, &k2, 80.0f, 300.0f);
+    }
+    settings.end();
 }
