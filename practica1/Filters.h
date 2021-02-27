@@ -89,3 +89,16 @@ class Distortion : public Filter {
   private:
     float k1, k2;
 };
+
+// Thresholding distorsion correction
+class Thresholding : public Filter {
+  public:
+    inline const static std::string name = "Thresholding";
+    Thresholding(int _thresh) : thresh(_thresh), invertir(false) {}
+    void apply(cv::Mat& img) const override;
+    void showSettings(EnhancedWindow& settings, cv::Mat& frame) override;
+
+  private:
+    float thresh;
+    bool invertir;
+};

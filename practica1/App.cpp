@@ -238,7 +238,7 @@ int main() {
     cv::namedWindow(WINDOW_NAME, cv::WINDOW_AUTOSIZE);
     // whiteNoise(window_name, cap.get(CV_CAP_PROP_FRAME_HEIGHT), cap.get(CV_CAP_PROP_FRAME_WIDTH));
 
-    EnhancedWindow mode(10, 50, 200, 240, "Filter");
+    EnhancedWindow mode(10, 50, 200, 340, "Filter");
     EnhancedWindow settings(1000, 50, 270, 180, "Settings");
 
     cvui::init(WINDOW_NAME);
@@ -279,7 +279,10 @@ int main() {
                 filter = std::make_shared<Alien>(0, 255, 0, 100);
             }
             if (cvui::button(Distortion::name)) {
-                filter = std::make_shared<Distortion>(1, 2);
+                filter = std::make_shared<Distortion>(0, 0);
+            }
+            if (cvui::button(Thresholding::name)) {
+                filter = std::make_shared<Thresholding>(120);
             }
         }
         mode.end();
