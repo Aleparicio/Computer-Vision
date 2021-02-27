@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
         int key = cv::waitKey(40);
         if (key == 'c') {
             // Capture image when c is pressed
-            std::cout << "Written: " << imwriteSafe("imagen.png", frame) << std::endl;
+            std::cout << "Written: " << imwriteSafe("image.png", frame) << std::endl;
             frame = Scalar(255, 255, 255);
         } else if (key == 27 || key == 'q') {
             // Finish when ESC or q is pressed
