@@ -284,6 +284,9 @@ int main() {
             if (cvui::button(Thresholding::name)) {
                 filter = std::make_shared<Thresholding>(120);
             }
+            if (cvui::button(DuoTone::name)) {
+                filter = std::make_shared<DuoTone>(1);
+            }
         }
         mode.end();
 
