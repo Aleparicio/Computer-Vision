@@ -13,8 +13,6 @@
 #include "Filters.h"
 #include "Histogram.h"
 
-const std::string WINDOW_NAME = "Filter";
-
 void whiteNoise(int width, int height) {
     cv::Mat noise(height, width, CV_8UC1);
     cv::randn(noise, cv::Scalar(0), cv::Scalar(256));
@@ -64,8 +62,10 @@ int main(int argc, char* argv[]) {
     cv::VideoCapture cap;
     cv::Mat img;
 
+    std::string WINDOW_NAME = "Filter - ";
+
     if (argc <= 1) {
-        std::cout << "Entrado 1" << std::endl;
+        WINDOW_NAME += "Camera";
         useCamera = true;
         // Open camera
         if (!cap.open(0)) {
@@ -73,10 +73,9 @@ int main(int argc, char* argv[]) {
             return 1;
         }
     } else {
-        std::cout << "Entrado 2" << std::endl;
-        std::cout << argv[1] << std::endl;
+        WINDOW_NAME += argv[1];
         useCamera = false;
-        cv::Mat img = cv::imread(argv[1], cv::IMREAD_COLOR);
+        img = cv::imread(argv[1], cv::IMREAD_COLOR);
         if (img.empty()) {
             std::cout << "Cannot open " << argv[1] << std::endl;
             return 1;
@@ -107,12 +106,13 @@ int main(int argc, char* argv[]) {
             filter->apply(frame);
         }
 
-        // Finish when ESC is pressed
         int key = cv::waitKey(40);
         if (key == 'c') {
+            // Capture image when c is pressed
             std::cout << "Written: " << imwriteSafe("imagen.png", frame) << std::endl;
             frame = Scalar(255, 255, 255);
-        } else if (key == 27) {
+        } else if (key == 27 || key == 'q') {
+            // Finish when ESC or q is pressed
             break;
         }
 
