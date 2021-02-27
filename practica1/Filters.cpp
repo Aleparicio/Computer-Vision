@@ -119,7 +119,7 @@ void Alien::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
     settings.setHeight(350);
     settings.begin(frame);
     if (!settings.isMinimized()) {
-        cvui::text("R");
+        /*cvui::text("R");
         cvui::trackbar(settings.width() - 20, &R, 0, 255, 1, "%.0Lf");
         cvui::space(20);
         cvui::text("G");
@@ -129,7 +129,8 @@ void Alien::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
         cvui::trackbar(settings.width() - 20, &B, 0, 255, 1, "%.0Lf");
         cvui::space(20);
         cvui::text("Alpha");
-        cvui::trackbar(settings.width() - 20, &alpha, 0, 255, 1, "%.0Lf");
+        cvui::trackbar(settings.width() - 20, &alpha, 0, 255, 1, "%.0Lf");*/
+        cvui::text("No settings!");
     }
     settings.end();
 }
