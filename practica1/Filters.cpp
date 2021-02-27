@@ -153,12 +153,10 @@ void Distortion::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
     settings.setHeight(180);
     settings.begin(frame);
     if (!settings.isMinimized()) {
-        cvui::text("k1 will be divided by 1000000");
-        cvui::text("k2 will be divided by 1000000000");
-        cvui::text("k1");
+        cvui::text("k1 (will be divided by 1000000)");
         cvui::trackbar(settings.width() - 20, &k1, -3.f, 3.f);
         cvui::space(20);
-        cvui::text("k2");
+        cvui::text("k2 (will be divided by 1000000000)");
         cvui::trackbar(settings.width() - 20, &k2, -1.f, 1.f);
     }
     settings.end();
@@ -186,6 +184,7 @@ void Thresholding::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
 }
 
 // Twirl
+// http://acodigo.blogspot.com/2017/01/tutorial-opencv-filtro-twirl.html
 void Twirl::apply(cv::Mat& img) const {
     cv::Mat source = img.clone();
 
@@ -235,10 +234,10 @@ void Twirl::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
     settings.setHeight(200);
     settings.begin(frame);
     if (!settings.isMinimized()) {
-        cvui::text("Threshold value");
+        cvui::text("Radius");
         cvui::trackbar(settings.width() - 20, &radius, 0.f, 1000.f);
         cvui::space(20);
-        cvui::text("Threshold value");
+        cvui::text("Twirl amount");
         cvui::trackbar(settings.width() - 20, &twist, 0.f, 25.f);
         cvui::space(20);
         cvui::text("Right mouse click to set the center!");
