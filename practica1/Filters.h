@@ -78,7 +78,7 @@ class Alien : public Filter {
     int R, G, B, alpha;
 };
 
-// Barrel and Pincushion distorsion correction
+// Barrel and Pincushion distortion correction
 class Distortion : public Filter {
   public:
     inline const static std::string name = "Distortion Correction";
@@ -94,11 +94,24 @@ class Distortion : public Filter {
 class Thresholding : public Filter {
   public:
     inline const static std::string name = "Thresholding";
-    Thresholding(int _thresh) : thresh(_thresh), invertir(false) {}
+    Thresholding(int _thresh) : thresh(_thresh), inverse(false) {}
     void apply(cv::Mat& img) const override;
     void showSettings(EnhancedWindow& settings, cv::Mat& frame) override;
 
   private:
     float thresh;
-    bool invertir;
+    bool inverse;
+};
+
+// Twirl (whirlpool) effect
+class Twirl : public Filter {
+  public:
+    inline const static std::string name = "Twirl";
+    Twirl(int _x, int _y, int _radius, int _twist)
+        : x(_x), y(_y), radius(_radius), twist(_twist) {}
+    void apply(cv::Mat& img) const override;
+    void showSettings(EnhancedWindow& settings, cv::Mat& frame) override;
+
+  private:
+    float x, y, radius, twist;
 };

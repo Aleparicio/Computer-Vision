@@ -43,16 +43,16 @@ void optionsEqContrast() {
 }
 
 void whiteNoise(std::string winname, int width, int height) {
-    cv::Mat noise(width, height, CV_8UC1);
+    cv::Mat noise(height, width, CV_8UC1);
     cv::randn(noise, cv::Scalar(0), cv::Scalar(256));
     cv::imshow(winname, noise);
     cv::waitKey(1);
 }
 
 void whiteImage(std::string winname, int width, int height) {
-    cv::Mat noise(width, height, CV_8UC1);
-    cv::randn(noise, cv::Scalar(0), cv::Scalar(256));
-    cv::imshow(winname, noise);
+    cv::Mat white(height, width, CV_8UC1);
+    white = cv::Scalar(255);
+    cv::imshow(winname, white);
     cv::waitKey(1);
 }
 
@@ -249,6 +249,10 @@ int main() {
 
         cap >> frame;
 
+        // frame = cv::imread("../flor.jpg", cv::IMREAD_COLOR);
+        // frame = cv::imread("../lenna.png", cv::IMREAD_COLOR);
+        // frame = cv::imread("../garden.jpg", cv::IMREAD_COLOR);
+
         if (frame.empty()) // end of video stream
             break;
 
@@ -284,13 +288,16 @@ int main() {
             if (cvui::button(Thresholding::name)) {
                 filter = std::make_shared<Thresholding>(120);
             }
+            if (cvui::button(Twirl::name)) {
+                filter = std::make_shared<Twirl>(frame.cols / 2, frame.rows / 2, frame.rows / 1.5, 2);
+            }
         }
         mode.end();
 
         cvui::imshow(WINDOW_NAME, frame);
 
         // Finish when ESC is pressed
-        if (cv::waitKey(20) == 27) {
+        if (cv::waitKey(40) == 27) {
             break;
         }
     }
