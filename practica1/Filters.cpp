@@ -78,7 +78,7 @@ void Posterization::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
     settings.setHeight(100);
     settings.begin(frame);
     if (!settings.isMinimized()) {
-        cvui::text("Number of colors in each channel");
+        cvui::text("Number of colors per channel");
         cvui::trackbar(settings.width() - 20, &numColors, 1, 25, 1, "%.0Lf", cvui::TRACKBAR_DISCRETE);
     }
     settings.end();
@@ -134,6 +134,13 @@ void Alien::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
     settings.end();
 }
 
+// Scale value between min and max
+float scale(float value, float min, float max) {
+    // if value [0,1]
+    // return (max - min) * value + min;
+    return (value - min) / (max - min);
+}
+
 // Distortion
 void Distortion::apply(cv::Mat& img) const {
 
@@ -145,16 +152,16 @@ void Distortion::apply(cv::Mat& img) const {
     int h = img.rows;
     int w = img.cols;
 
-    float gk1 = (float) k1 / 1000000.f;
-    float gk2 = (float) k2 / 1000000000.f;
+    float gk1 = (float)k1 / 1000000.f;
+    float gk2 = (float)k2 / 1000000000.f;
 
-    float* bufferx = (float*) (&ximg)->data;
-    float* buffery = (float*) (&yimg)->data;
+    float* bufferx = (float*)(&ximg)->data;
+    float* buffery = (float*)(&yimg)->data;
     for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {        
-            float r2 = (x - cx)*(x - cx) + (y - cy)*(y - cy);
-            *bufferx = (x - cx)*(1 + gk1*r2 + gk2*pow(r2,2));
-            *buffery = (y - cy)*(1 + gk1*r2 + gk2*pow(r2,2));
+        for (int x = 0; x < w; x++) {
+            float r2 = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+            *bufferx = (x - cx) * (1 + gk1 * r2 + gk2 * r2 * r2);
+            *buffery = (y - cy) * (1 + gk1 * r2 + gk2 * r2 * r2);
             ++buffery;
             ++bufferx;
         }
@@ -163,8 +170,9 @@ void Distortion::apply(cv::Mat& img) const {
     ximg = ximg + (cx);
     yimg = yimg + (cy);
 
-    cv::Mat aux = img.clone();
-    cv::remap(aux, img, ximg, yimg, cv::INTER_LINEAR);
+    // cv::Mat aux = img.clone();
+    // cv::remap(aux, img, ximg, yimg, cv::INTER_LINEAR);
+    cv::remap(img, img, ximg, yimg, cv::INTER_LINEAR);
 }
 
 void Distortion::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
@@ -185,10 +193,10 @@ void Distortion::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
 // Thresholding
 void Thresholding::apply(cv::Mat& img) const {
     cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
-    if(invertir)
+    if (inverse)
         cv::threshold(img, img, thresh, 255, cv::THRESH_BINARY_INV);
     else
-        cv::threshold(img, img, thresh, 255, cv::THRESH_BINARY); 		
+        cv::threshold(img, img, thresh, 255, cv::THRESH_BINARY);
 }
 
 void Thresholding::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
@@ -198,7 +206,68 @@ void Thresholding::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
         cvui::text("Threshold value");
         cvui::trackbar(settings.width() - 20, &thresh, 0.f, 255.f);
         cvui::space(20);
-        cvui::checkbox("Invertir", &invertir);
+        cvui::checkbox("Inverse", &inverse);
+    }
+    settings.end();
+}
+
+// Twirl
+void Twirl::apply(cv::Mat& img) const {
+    cv::Mat source = img.clone();
+
+    const float width = (float)img.rows;
+    const float height = (float)img.cols;
+
+    for (int i = 0; i < img.rows; i++) {
+        for (int j = 0; j < img.cols; j++) {
+
+            // Perform all the calculations repect to the twirl center
+            float xp = (float)j - x;
+            float yp = (float)i - y;
+
+            // Angle between the pixel and the X axis
+            float angle = atan2f(yp, xp);
+            // Distance between the pixel and the center
+            float distance = sqrtf((xp * xp) + (yp * yp));
+
+            float amount = 1.0f - (distance / radius);
+            if (amount > 0.0f) {
+                angle += (twist / 10.0f) * amount * M_PI * 2.0f;
+
+                float xr = sinf(angle) * distance + y;
+                float yr = cosf(angle) * distance + x;
+
+                int k = (int)std::min(width - 1, std::max(0.0f, xr));
+                int m = (int)std::min(height - 1, std::max(0.0f, yr));
+
+                uchar* src = source.ptr<uchar>(k, m);
+                uchar* out = img.ptr<uchar>(i, j);
+
+                out[0] = src[0];
+                out[1] = src[1];
+                out[2] = src[2];
+            }
+        }
+    }
+}
+
+void Twirl::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    // Mouse interaction
+    if (cvui::mouse(cvui::RIGHT_BUTTON, cvui::DOWN)) {
+        x = cvui::mouse().x;
+        y = cvui::mouse().y;
+    }
+
+    settings.setHeight(200);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("Threshold value");
+        cvui::trackbar(settings.width() - 20, &radius, 0.f, 1000.f);
+        cvui::space(20);
+        cvui::text("Threshold value");
+        cvui::trackbar(settings.width() - 20, &twist, 0.f, 25.f);
+        cvui::space(20);
+        cvui::text("Right mouse click to set the center!");
     }
     settings.end();
 }
