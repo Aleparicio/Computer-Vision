@@ -147,6 +147,9 @@ int main(int argc, char* argv[]) {
             if (cvui::button(Thresholding::name)) {
                 filter = std::make_shared<Thresholding>(120);
             }
+            if (cvui::button(DuoTone::name)) {
+                filter = std::make_shared<DuoTone>(1);
+            }
             if (cvui::button(Twirl::name)) {
                 filter = std::make_shared<Twirl>(frame.cols / 2, frame.rows / 2, frame.rows / 1.5, 2);
             }

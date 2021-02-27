@@ -115,3 +115,17 @@ class Twirl : public Filter {
   private:
     float x, y, radius, twist;
 };
+
+// DuoTone
+class DuoTone : public Filter {
+  public:
+    inline const static std::string name = "Duo Tone";
+    DuoTone(float _exp1) : exp1(_exp1) {}
+    void apply(cv::Mat& img) const override;
+    void showSettings(EnhancedWindow& settings, cv::Mat& frame) override;
+
+  private:
+    float exp1;
+    int s1 = 1, s2 = 3, s3 = 0;
+};
+

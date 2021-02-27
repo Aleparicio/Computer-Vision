@@ -85,15 +85,41 @@ void Posterization::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
 }
 
 // Alien
-
+// https://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
 void Alien::apply(cv::Mat& img) const {
+    
+    cv::Mat hsv, mask, piel;
+	cv::cvtColor(img, hsv, cv::COLOR_BGR2HSV);
+    cv::inRange(hsv, cv::Scalar(0, 40, 60), cv::Scalar(20, 150, 255), mask);
+
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(11,11));
+    cv::erode(mask, mask, kernel, cv::Point(-1, -1), 2);
+	cv::dilate(mask, mask, kernel, cv::Point(-1, -1), 2);
+	cv::GaussianBlur(mask, mask, cv::Size(3, 3), 0);
+
+    cv::Mat ycr, mask2, defMask;
+    cv::cvtColor(img, ycr, cv::COLOR_BGR2YCrCb);
+    cv::inRange(ycr, cv::Scalar(0,138,67), cv::Scalar(255,173,133), mask2);
+    cv::add(mask, mask2, defMask);
+
+    int h = img.rows;
+    int w = img.cols;
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {       
+            if (defMask.at<uchar>(y,x) != 0) { // I am adding green for better visualization
+                img.at<cv::Vec3b>(y,x)[1] = img.at<cv::Vec3b>(y,x)[1] + 100;
+                img.at<cv::Vec3b>(y,x)[0] = 30;
+                img.at<cv::Vec3b>(y,x)[2] = 30;
+            }
+        }   
+    }
 }
 
 void Alien::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
     settings.setHeight(350);
     settings.begin(frame);
     if (!settings.isMinimized()) {
-        cvui::text("R");
+        /*cvui::text("R");
         cvui::trackbar(settings.width() - 20, &R, 0, 255, 1, "%.0Lf");
         cvui::space(20);
         cvui::text("G");
@@ -103,7 +129,8 @@ void Alien::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
         cvui::trackbar(settings.width() - 20, &B, 0, 255, 1, "%.0Lf");
         cvui::space(20);
         cvui::text("Alpha");
-        cvui::trackbar(settings.width() - 20, &alpha, 0, 255, 1, "%.0Lf");
+        cvui::trackbar(settings.width() - 20, &alpha, 0, 255, 1, "%.0Lf");*/
+        cvui::text("No settings!");
     }
     settings.end();
 }
@@ -243,4 +270,51 @@ void Twirl::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
         cvui::text("Right mouse click to set the center!");
     }
     settings.end();
+}
+
+
+// DuoTone
+void DuoTone::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(300);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("Exponent value");
+        cvui::trackbar(settings.width() - 20, &exp1, 0.f, 5.f);
+        cvui::space(10);
+        cvui::trackbar(settings.width() - 20, &s1, 0, 2, 1, "%.0Lf");
+        cvui::space(10);
+        cvui::trackbar(settings.width() - 20, &s2, 0, 3, 1, "%.0Lf");
+        cvui::space(10);
+        cvui::trackbar(settings.width() - 20, &s3, 0, 1, 1, "%.0Lf");
+    }
+    settings.end();
+}
+
+// https://learnopencv.com/photoshop-filters-in-opencv/
+void DuoTone::apply(cv::Mat& img) const{
+	
+	cv::Mat channels[3];
+    std::vector<cv::Mat> finalChannels(3);
+    cv::Mat table(1, 256, CV_8U);
+	cv::split(img, channels);
+    float exp = 1 + exp1 / 100.0;
+
+	for (int i = 0; i < 3; i++){
+		if ((i == s1) || (i==s2)){
+            for (int i = 0; i < 256; i++)
+		        table.at<uchar>(i) = std::min((int) pow(i,exp), 255);
+	        LUT(channels[i], table, finalChannels[i]);
+        }
+		else{
+			if (s3){
+                for (int i = 0; i < 256; i++)
+		            table.at<uchar>(i) = std::min((int) pow(i,2 - exp), 255);
+	            LUT(channels[i], table, finalChannels[i]);
+            }
+			else
+				finalChannels[i] = cv::Mat::zeros(channels[i].size(),CV_8UC1);
+		}
+	}
+
+	cv::merge(finalChannels,img);
 }
