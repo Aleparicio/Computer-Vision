@@ -1,4 +1,3 @@
-#include <iomanip>
 #include <iostream>
 #include <memory>
 
@@ -90,7 +89,7 @@ int main(int argc, char* argv[]) {
     cvui::init(WINDOW_NAME);
     cv::Mat frame;
     cap >> frame;
-	// cv::VideoWriter video("outcpp.avi",cv::VideoWriter::fourcc('M','J','P','G'), 10, cv::Size(frame.cols, frame.rows), true);
+    // cv::VideoWriter video("outcpp.avi",cv::VideoWriter::fourcc('M','J','P','G'), 10, cv::Size(frame.cols, frame.rows), true);
 
     while (true) {
 
@@ -158,11 +157,6 @@ int main(int argc, char* argv[]) {
         mode.end();
 
         cvui::imshow(WINDOW_NAME, frame);
-
-        // Finish when ESC is pressed
-        if (cv::waitKey(40) == 27) {
-            break;
-        }
     }
 
     // video.release();

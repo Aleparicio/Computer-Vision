@@ -1,7 +1,6 @@
 #include "Filters.h"
 
 // Contrast
-
 void Contrast::apply(cv::Mat& img) const {
     cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
     img = gain * img;
@@ -22,7 +21,6 @@ void Contrast::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
 }
 
 // Histogram Equalization
-
 void HistogramEqualization::apply(cv::Mat& image) const {
     cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
     cv::equalizeHist(image, image);
@@ -38,7 +36,6 @@ void HistogramEqualization::showSettings(EnhancedWindow& settings, cv::Mat& fram
 }
 
 // CLAHE
-
 void CLAHE::apply(cv::Mat& image) const {
     cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
     cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
@@ -57,7 +54,6 @@ void CLAHE::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
 }
 
 // Posterize
-
 int Posterization::reduce(int value, int numColors) const {
     // Size of each interval
     int size = 255 / numColors;
@@ -105,11 +101,11 @@ void Alien::apply(cv::Mat& img) const {
     int h = img.rows;
     int w = img.cols;
     for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {       
-            if (defMask.at<uchar>(y,x) != 0) { // I am adding green for better visualization
-                img.at<cv::Vec3b>(y,x)[1] = 255;
-                img.at<cv::Vec3b>(y,x)[0] = 30;
-                img.at<cv::Vec3b>(y,x)[2] = 30;
+        for (int x = 0; x < w; x++) {
+            if (defMask.at<uchar>(y, x) != 0) { // I am adding green for better visualization
+                img.at<cv::Vec3b>(y, x)[1] = 255;
+                img.at<cv::Vec3b>(y, x)[0] = 30;
+                img.at<cv::Vec3b>(y, x)[2] = 30;
             }
         }
     }
@@ -133,13 +129,6 @@ void Alien::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
         cvui::text("No settings!");
     }
     settings.end();
-}
-
-// Scale value between min and max
-float scale(float value, float min, float max) {
-    // if value [0,1]
-    // return (max - min) * value + min;
-    return (value - min) / (max - min);
 }
 
 // Distortion
@@ -221,7 +210,7 @@ void Twirl::apply(cv::Mat& img) const {
     for (int i = 0; i < img.rows; i++) {
         for (int j = 0; j < img.cols; j++) {
 
-            // Perform all the calculations repect to the twirl center
+            // Perform all the calculations respect to the twirl center
             float xp = (float)j - x;
             float yp = (float)i - y;
 
@@ -273,25 +262,8 @@ void Twirl::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
 }
 
 // DuoTone
-void DuoTone::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
-    settings.setHeight(300);
-    settings.begin(frame);
-    if (!settings.isMinimized()) {
-        cvui::text("Exponent value");
-        cvui::trackbar(settings.width() - 20, &exp1, 0.f, 5.f);
-        cvui::space(10);
-        cvui::trackbar(settings.width() - 20, &s1, 0, 2, 1, "%.0Lf");
-        cvui::space(10);
-        cvui::trackbar(settings.width() - 20, &s2, 0, 3, 1, "%.0Lf");
-        cvui::space(10);
-        cvui::trackbar(settings.width() - 20, &s3, 0, 1, 1, "%.0Lf");
-    }
-    settings.end();
-}
-
 // https://learnopencv.com/photoshop-filters-in-opencv/
 void DuoTone::apply(cv::Mat& img) const {
-
     cv::Mat channels[3];
     std::vector<cv::Mat> finalChannels(3);
     cv::Mat table(1, 256, CV_8U);
@@ -314,4 +286,20 @@ void DuoTone::apply(cv::Mat& img) const {
     }
 
     cv::merge(finalChannels, img);
+}
+
+void DuoTone::showSettings(EnhancedWindow& settings, cv::Mat& frame) {
+    settings.setHeight(300);
+    settings.begin(frame);
+    if (!settings.isMinimized()) {
+        cvui::text("Exponent value");
+        cvui::trackbar(settings.width() - 20, &exp1, 0.f, 5.f);
+        cvui::space(10);
+        cvui::trackbar(settings.width() - 20, &s1, 0, 2, 1, "%.0Lf");
+        cvui::space(10);
+        cvui::trackbar(settings.width() - 20, &s2, 0, 3, 1, "%.0Lf");
+        cvui::space(10);
+        cvui::trackbar(settings.width() - 20, &s3, 0, 1, 1, "%.0Lf");
+    }
+    settings.end();
 }
