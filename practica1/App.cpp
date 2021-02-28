@@ -11,7 +11,6 @@
 #include "EnhancedWindow.h"
 
 #include "Filters.h"
-#include "Histogram.h"
 
 void whiteNoise(int width, int height) {
     cv::Mat noise(height, width, CV_8UC1);
@@ -90,6 +89,8 @@ int main(int argc, char* argv[]) {
 
     cvui::init(WINDOW_NAME);
     cv::Mat frame;
+    cap >> frame;
+	// cv::VideoWriter video("outcpp.avi",cv::VideoWriter::fourcc('M','J','P','G'), 10, cv::Size(frame.cols, frame.rows), true);
 
     while (true) {
 
@@ -110,7 +111,7 @@ int main(int argc, char* argv[]) {
         if (key == 'c') {
             // Capture image when c is pressed
             std::cout << "Written: " << imwriteSafe("image.png", frame) << std::endl;
-            frame = Scalar(255, 255, 255);
+            frame = cv::Scalar(255, 255, 255);
         } else if (key == 27 || key == 'q') {
             // Finish when ESC or q is pressed
             break;
@@ -157,7 +158,13 @@ int main(int argc, char* argv[]) {
         mode.end();
 
         cvui::imshow(WINDOW_NAME, frame);
+
+        // Finish when ESC is pressed
+        if (cv::waitKey(40) == 27) {
+            break;
+        }
     }
 
+    // video.release();
     return 0;
 }

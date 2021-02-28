@@ -105,11 +105,11 @@ void Alien::apply(cv::Mat& img) const {
     int h = img.rows;
     int w = img.cols;
     for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            if (defMask.at<uchar>(y, x) != 0) { // I am adding green for better visualization
-                img.at<cv::Vec3b>(y, x)[1] = img.at<cv::Vec3b>(y, x)[1] + 100;
-                img.at<cv::Vec3b>(y, x)[0] = 30;
-                img.at<cv::Vec3b>(y, x)[2] = 30;
+        for (int x = 0; x < w; x++) {       
+            if (defMask.at<uchar>(y,x) != 0) { // I am adding green for better visualization
+                img.at<cv::Vec3b>(y,x)[1] = 255;
+                img.at<cv::Vec3b>(y,x)[0] = 30;
+                img.at<cv::Vec3b>(y,x)[2] = 30;
             }
         }
     }
