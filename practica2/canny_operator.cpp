@@ -32,7 +32,7 @@ cv::Mat gaussianDerivativeKernel(float sigma, int n) {
     return kernel;
 }
 
-float sumNonZero(cv::Mat mat) {
+float sumPositive(cv::Mat mat) {
     // std::cout << mat << std::endl;
 
     // cv::Mat mask = (mat > 0);
@@ -73,13 +73,13 @@ void CannyGradient(cv::InputArray src, cv::OutputArray grad_x, cv::OutputArray g
 
     // x gradient
     kernel = -G.t() * dG;
-    k = sumNonZero(kernel);
+    k = sumPositive(kernel);
     kernel /= k;
     cv::filter2D(src_converted, grad_x, CV_16S, kernel);
 
     // y gradient
     kernel = -dG.t() * G;
-    k = sumNonZero(kernel);
+    k = sumPositive(kernel);
     kernel /= k;
     cv::filter2D(src_converted, grad_y, CV_16S, kernel);
 }

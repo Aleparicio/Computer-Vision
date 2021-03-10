@@ -1,7 +1,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 
-float sumNonZero(cv::Mat mat);
+float sumPositive(cv::Mat mat);
 
 cv::Mat gaussianKernel(float sigma, int n);
 
