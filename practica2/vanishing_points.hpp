@@ -3,6 +3,10 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+
+#include "canny_operator.hpp"
 #include <iostream>
 #include <list>
 
@@ -31,5 +35,8 @@ bool intersection(cv::Vec2f a, cv::Vec2f b, cv::Vec2f c, cv::Vec2f d, cv::Vec2f&
 // Dibuja las líneas sobre la imagen, almacenadas como x1 y1 x2 y2.
 // Además, dibuja el punto de fuga
 void draw2Dlines(cv::Mat& cdst, std::vector<cv::Vec4f>& lines, cv::Point2i punto_fuga);
+
+// Obtiene los puntos de fuga de la iamge
+cv::Mat getVanishingPoints(cv::Mat frame);
 
 #endif

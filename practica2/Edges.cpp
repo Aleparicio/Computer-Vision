@@ -4,16 +4,113 @@
 #include <opencv2/imgproc.hpp>
 
 #include <iostream>
-
+#define CVUI_IMPLEMENTATION
+#include "cvui.h"
 #include "vanishing_points.hpp"
 #include "canny_operator.hpp"
 
+
+
+// https://answers.opencv.org/question/65222/is-there-a-way-to-keep-imwrite-from-overwriting-files/
+const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
+                              const std::vector<int>& params = std::vector<int>()) {
+
+    static FILE* f;
+    static cv::String newname;
+
+    f = fopen(filename.c_str(), "rb");
+    newname = filename;
+
+    if (f) {
+        int counter = 0;
+        const int extension_dot = filename.find_first_of('.');
+        cv::String name = filename.substr(0, extension_dot);
+        cv::String extension = filename.substr(extension_dot);
+        do {
+            ++counter;
+            newname = (name + "_" + std::to_string(counter) + extension);
+            fclose(f);
+            f = fopen(newname.c_str(), "rb");
+        } while (f);
+    }
+
+    if (cv::imwrite(newname, img, params))
+        return newname;
+    else
+        throw 0;
+}
+
 int main(int argc, char* argv[]) {
+
+    bool rotate = false;
+    cv::VideoCapture cap;
+    cv::Mat img;
+    std::string WINDOW_NAME = "Vanishing point - ";
+
+    if (argc <= 1) {
+        WINDOW_NAME += "Camera";
+        if (!cap.open(0)) {
+            std::cout << "Failed to connect to camera." << std::endl;
+            return 1;
+        }
+
+    } else {
+
+        rotate = true;
+        WINDOW_NAME += argv[1];
+        cap = cv::VideoCapture(argv[1]);
+        if (!cap.isOpened()) {
+            std::cout << "Cannot open " << argv[1] << std::endl;
+            return 1;
+        }
+    }
+
+    cv::Mat frame;
+    cap >> frame;
+    // cv::VideoWriter video("outcpp.avi",cv::VideoWriter::fourcc('M','J','P','G'), 10, cv::Size(frame.cols, frame.rows), true);
+
+    while (true) {
+
+        cap >> frame;
+        if (frame.empty()) // end of video stream
+            break;
+
+        cv::rotate(frame, frame, cv::ROTATE_90_CLOCKWISE);
+        frame = getVanishingPoints(frame);
+
+        int key = cv::waitKey(40);
+        if (key == 'c') {
+            // Capture image when c is pressed
+            std::cout << "Written: " << imwriteSafe("image.png", frame) << std::endl;
+            frame = cv::Scalar(255, 255, 255);
+        } else if (key == 27 || key == 'q') {
+            // Finish when ESC or q is pressed
+            break;
+        }
+        
+        cv::imshow( "Frame", frame );
+    }
+
+    cap.release();
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*int main(int argc, char* argv[]) {
 
     std::string image_path;
 
-    // image_path = cv::samples::findFile("../../images/hendrix/poster.pgm");
-    image_path = cv::samples::findFile("../../images/hendrix/pasillo2.pgm");
+    image_path = cv::samples::findFile("../../images/hendrix/poster.pgm");
+    // image_path = cv::samples::findFile("../../images/hendrix/pasillo2.pgm");
     cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
 
     if (img.empty()) {
@@ -64,16 +161,15 @@ int main(int argc, char* argv[]) {
     std::cout << "Hay " << flines.size() << " líneas" << std::endl;
 
     // Probabilistic Line Transform
-    /* std::vector<cv::Vec4i> linesP;
+     std::vector<cv::Vec4i> linesP;
     cv::HoughLinesP(dst, linesP, 1, CV_PI / 180, 50, 50, 10);
     std::cout << "Hay " << linesP.size() << " líneas" << std::endl;
     // Draw the lines
     for (size_t i = 0; i < linesP.size(); i++) {
         cv::Vec4i l = linesP[i];
         line(cdstP, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
-    }*/
+    }
 
-    // Show results
     cv::imshow("Source", src);
     cv::imshow("Detected Lines (in red) - Standard Hough Line Transform", cdst);
     //cv::imshow("Detected Lines (in red) - Probabilistic Line Transform", cdstP);
@@ -82,7 +178,7 @@ int main(int argc, char* argv[]) {
     cv::destroyAllWindows();
 
     return 0;
-}
+}*/
 
 
 
@@ -113,108 +209,3 @@ int main(int argc, char* argv[]) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void aux(){
-        /*
-    // int ddepth = CV_16S;
-    int ddepth = CV_32F;
-    // int ddepth = CV_8U;
-    int ksize = 3;
-    int scale = 1;
-    int delta = 0;
-
-    cv::Sobel(src_gray, grad_x, ddepth, 1, 0, ksize, scale, delta, cv::BORDER_DEFAULT);
-    cv::Sobel(src_gray, grad_y, ddepth, 0, 1, ksize, scale, delta, cv::BORDER_DEFAULT);
-
-    grad_x /= 4;
-    grad_y /= 4;
-
-    double min, max;
-    cv::minMaxLoc(grad_x, &min, &max);
-    std::cout << "grad_x: " << min << " " << max << std::endl;
-    cv::minMaxLoc(grad_y, &min, &max);
-    std::cout << "grad_y: " << min << " " << max << std::endl;
-
-    cv::convertScaleAbs(grad_x, abs_grad_x);
-    cv::convertScaleAbs(grad_y, abs_grad_y);
-
-    cv::Mat grad;
-    cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
-
-    cv::imshow("Grad", grad);
-
-    cv::imshow("Grad x abs", abs_grad_x);
-
-    // grad_x /= 3;
-    // grad_y /= 3;
-
-    // grad_x = grad_x / 8;
-    // grad_y = grad_y / 8;
-
-    // cv::convertScaleAbs(grad_x, abs_grad_x, 0.5, 128);
-    // cv::convertScaleAbs(grad_y, abs_grad_y, 0.5, 128);
-    // abs_grad_x = (grad_x * 0.5) + 128;
-    // cv::minMaxLoc(abs_grad_x, &min, &max);
-    // std::cout << min << " " << max << std::endl;
-    // cv::minMaxLoc(grad_y, &min, &max);
-    // std::cout << min << " " << max << std::endl;
-
-    grad_x.convertTo(abs_grad_x, CV_8U, 0.5, 128);
-    grad_y.convertTo(abs_grad_y, CV_8U, 0.5, 128);
-
-    // Invert y gradient
-    // grad_y = -grad_y;
-
-    // std::cout << abs_grad_x << std::endl;
-    // std::cout << grad_x / 2 + 128 << std::endl;
-
-    // cv::imshow("Grad x", grad_y / 2 + 128);
-    // cv::imshow("Grad y", grad_y / 2 + 128);
-
-    cv::imshow("Grad x", abs_grad_x);
-    cv::imshow("Grad y", abs_grad_y);
-
-    // Gradient magnitude
-    cv::Mat mag, angle;
-    // cv::sqrt(abs_grad_x * abs_grad_x + abs_grad_y * abs_grad_y, mag);
-    // cv::sqrt(grad_x * grad_x + grad_y * grad_y, mag);
-    // cv::magnitude(abs_grad_x, abs_grad_y, mag);
-    // cv::magnitude(grad_x, grad_y, mag);
-
-    // cv::cartToPolar(abs_grad_x, abs_grad_y, mag, angle);
-    cv::cartToPolar(grad_x, grad_y, mag, angle);
-
-    // cv::convertScaleAbs(mag, mag);
-    mag.convertTo(mag, CV_8U);
-    angle.convertTo(angle, CV_8U, 128 / CV_PI);
-    cv::imshow("Magnitude", mag);
-    cv::imshow("Angle", angle);
-
-    // cv::Mat mag = grad_x * grad_x + grad_y * grad_y;
-    // std::cout << grad_x << std::endl;
-    // std::cout << mag.t() << std::endl;
-
-    cv::imshow("Display window", img);
-    cv::waitKey(0); // Wait por a keystroke in the window
-    cv::destroyAllWindows();*/
-
-}

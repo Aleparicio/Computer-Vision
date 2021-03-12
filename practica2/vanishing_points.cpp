@@ -30,7 +30,7 @@ void filterLinesAndVote(std::vector<cv::Vec2f>& lines, cv::Mat& img,
 
     flines.clear();
     cv::Vec2f pt1, pt2, res;
-    const int angleVertical = 10;
+    const int angleVertical = 5;
     std::vector<cv::Vec2f> valid_intersections;
 
     // Obtención de la recta que pasa por el centro de la imagen
@@ -113,4 +113,26 @@ void draw2Dlines(cv::Mat& cdst, std::vector<cv::Vec4f>& lines, cv::Point2i punto
         cv::line(cdst, pt1, pt2, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
     }
     cv::drawMarker(cdst, punto_fuga, cv::Scalar(0,255,0));
+}
+
+cv::Mat getVanishingPoints(cv::Mat frame){
+    
+    cv::Mat frame_gray, grad_x, grad_y, dst;
+    cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+    CannyGradient(frame_gray, grad_x, grad_y, 1.4, 5);
+    cv::Canny(grad_x, grad_y, dst, 8, 50, true);
+
+    cv::Mat cdst;
+    cv::Vec2i punto_fuga(0,0);
+    cv::cvtColor(dst, cdst, cv::COLOR_GRAY2BGR);
+
+    // Standard Hough Line Transform
+    std::vector<cv::Vec2f> lines;                    
+    std::vector<cv::Vec4f> flines; 
+    cv::HoughLines(dst, lines, 1, CV_PI / 180, 85, 0, 0, 0.0, CV_PI / 2.0); // Run the detection
+    std::cout << "Hay " << lines.size() << " líneas" << std::endl;
+    filterLinesAndVote(lines, dst, flines, punto_fuga);
+    draw2Dlines(cdst, flines, punto_fuga);
+    std::cout << "Hay " << flines.size() << " líneas" << std::endl;
+    return cdst;
 }

@@ -29,7 +29,7 @@ cv::Mat gaussianDerivativeKernel(float sigma, int n) {
     return kernel;
 }
 
-float sumNonZero(cv::Mat mat) {
+float sumPositive(cv::Mat mat) {
     
     /* std::cout << mat << std::endl;
     // cv::Mat mask = (mat > 0);
