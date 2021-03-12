@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
             break;
 
         cv::rotate(frame, frame, cv::ROTATE_90_CLOCKWISE);
-        //frame = getVanishingPoints(frame);
+        frame = getVanishingPoints(frame);
 
         int key = cv::waitKey(40);
         if (key == 'c') {
