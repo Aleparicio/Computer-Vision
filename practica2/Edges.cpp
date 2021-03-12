@@ -42,14 +42,16 @@ const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
 
 int main(int argc, char* argv[]) {
 
-    bool rotate = false;
+    bool rotate = true;
     cv::VideoCapture cap;
     cv::Mat img;
     std::string WINDOW_NAME = "Vanishing point - ";
 
     if (argc <= 1) {
+        rotate = false;
         WINDOW_NAME += "Camera";
-        if (!cap.open(0)) {
+        cap.open(0);
+        if (!cap.isOpened()) {
             std::cout << "Failed to connect to camera." << std::endl;
             return 1;
         }
@@ -76,7 +78,7 @@ int main(int argc, char* argv[]) {
             break;
 
         cv::rotate(frame, frame, cv::ROTATE_90_CLOCKWISE);
-        frame = getVanishingPoints(frame);
+        //frame = getVanishingPoints(frame);
 
         int key = cv::waitKey(40);
         if (key == 'c') {
