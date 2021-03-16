@@ -61,7 +61,7 @@ void CannyGradient(cv::InputArray src, cv::OutputArray grad_x, cv::OutputArray g
 
     // Convert input image to 16S
     cv::Mat src_converted;
-    src.getMat().convertTo(src_converted, CV_16S);
+    src.getMat().convertTo(src_converted, CV_32F);
 
     cv::Mat kernel;
     float k;
@@ -70,11 +70,12 @@ void CannyGradient(cv::InputArray src, cv::OutputArray grad_x, cv::OutputArray g
     kernel = -G.t() * dG;
     k = sumPositive(kernel);
     kernel /= k;
-    cv::filter2D(src_converted, grad_x, CV_16S, kernel);
+    cv::filter2D(src_converted, grad_x, CV_32F, kernel);
 
     // y gradient
     kernel = -dG.t() * G;
     k = sumPositive(kernel);
+    std::cout << k <<  std::endl;
     kernel /= k;
-    cv::filter2D(src_converted, grad_y, CV_16S, kernel);
+    cv::filter2D(src_converted, grad_y, CV_32F, kernel);
 }

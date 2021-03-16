@@ -10,7 +10,6 @@
 #include "canny_operator.hpp"
 
 
-
 // https://answers.opencv.org/question/65222/is-there-a-way-to-keep-imwrite-from-overwriting-files/
 const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
                               const std::vector<int>& params = std::vector<int>()) {
@@ -76,8 +75,8 @@ int main(int argc, char* argv[]) {
         cap >> frame;
         if (frame.empty()) // end of video stream
             break;
-
-        cv::rotate(frame, frame, cv::ROTATE_90_CLOCKWISE);
+        if(rotate)
+            cv::rotate(frame, frame, cv::ROTATE_90_CLOCKWISE);
         frame = getVanishingPoints(frame);
 
         int key = cv::waitKey(40);
@@ -100,14 +99,8 @@ int main(int argc, char* argv[]) {
 
 
 
-
-
-
-
-
-
-
-/*int main(int argc, char* argv[]) {
+/*
+int main(int argc, char* argv[]) {
 
     std::string image_path;
 
@@ -134,12 +127,25 @@ int main(int argc, char* argv[]) {
     cv::Mat dst;
 
     CannyGradient(src_gray, grad_x, grad_y, 1.4, 5);
-    grad_x.convertTo(abs_grad_x, CV_8U, 0.5, 128);
-    grad_y.convertTo(abs_grad_y, CV_8U, 0.5, 128);
-    imshow("Canny gradient x", abs_grad_x);
-    imshow("Canny gradient y", abs_grad_y);    
-    cv::Canny(grad_x, grad_y, dst, 6, 15, true);
-    imshow("Canny edges gaussian", dst);
+    double a,b;
+    float M = max(grad_x);
+    float m = min(grad_x);
+    std::cout << M << " " << m  << std::endl;
+    grad_x = (grad_x-m) / (M-m);
+
+
+    M = max(grad_y);
+    m = min(grad_y);
+    std::cout << M << " " << m  << std::endl;
+    grad_y = (grad_y-m) / (M-m);
+    
+    // imshow( "Canny", dst );
+    // grad_x.convertTo(abs_grad_x, CV_8U, 0.5, 128);
+    // grad_y.convertTo(abs_grad_y, CV_8U, 0.5, 128);
+    imshow("Canny gradient x", grad_x);
+    imshow("Canny gradient y", grad_y);    
+    // cv::Canny(grad_x, grad_y, dst, 6, 15, true);
+    // imshow("Canny edges gaussian", dst);
 
     cv::waitKey(0);
     cv::destroyAllWindows();

@@ -1,21 +1,44 @@
 #include "vanishing_points.hpp"
 
+float max(cv::Mat dst){
+    float m = dst.at<float>(0,0);
+    for(int i = 0; i < dst.rows; i++){
+        for(int j = 0; j < dst.cols; j++){
+                if(dst.at<float>(i,j) > m)
+                    m = dst.at<float>(i,j);
+        }
+    }
+    return m;
+}
+
+float min(cv::Mat dst){
+    float m = dst.at<float>(0,0);
+    for(int i = 0; i < dst.rows; i++){
+        for(int j = 0; j < dst.cols; j++){
+                if(dst.at<float>(i,j) < m)
+                    m = dst.at<float>(i,j);
+        }
+    }
+    return m;
+}
 
 // Votación y obtención del punto de fuga
 void votingProcess(cv::Mat img, std::vector<cv::Vec2f>& valid_intersections, cv::Vec2i& pt){
     
     // Votación
-    std::vector<int> pixels(img.cols, 0);
+    int discretizeFactor = 4;
+    int discretize = img.cols / discretizeFactor;
+    std::vector<int> pixels(discretize, 0);
     for(int i = 0; i < valid_intersections.size(); ++i)
-        pixels[cvRound(valid_intersections[i][0])] += 1;
+        pixels[cvRound(valid_intersections[i][0] / discretizeFactor)] += 1;
 
     // Obtención del punto de fuga
     int nmax = 0;
     pt[1] = img.rows / 2.0;
-    for(int i = 0; i < img.cols; ++i){
+    for(int i = 0; i < discretize; ++i){
         if(pixels[i] > nmax){
             nmax = pixels[i];
-            pt[0] = i;
+            pt[0] = i*discretizeFactor + discretizeFactor / 2; // Se coloca en el centro
         }
     }
 }
@@ -117,10 +140,27 @@ void draw2Dlines(cv::Mat& cdst, std::vector<cv::Vec4f>& lines, cv::Point2i punto
 
 cv::Mat getVanishingPoints(cv::Mat frame){
     
-    cv::Mat frame_gray, grad_x, grad_y, dst;
+    cv::Mat frame_gray, grad_x, grad_y, dst, x_aux, y_aux;
     cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
     CannyGradient(frame_gray, grad_x, grad_y, 1.4, 5);
-    cv::Canny(grad_x, grad_y, dst, 8, 50, true);
+
+    float M = max(grad_x), m = min(grad_x);
+    grad_x = (grad_x-m) / (M-m);
+    M = max(grad_y), m = min(grad_y);
+    grad_y = (grad_y-m) / (M-m);
+
+    //cartToPolar
+
+    cv::imshow("aa", grad_x);
+    cv::imshow("aaaaa", grad_y);
+
+    grad_y.convertTo(x_aux, CV_16S);
+    grad_x.convertTo(y_aux, CV_16S);
+    cv::imshow("ccccc", x_aux /2 + 128);
+    cv::imshow("cc", y_aux / 2 + 128);
+    cv::waitKey(0);
+
+    cv::Canny(x_aux, y_aux, dst, 8, 50, true);
 
     cv::Mat cdst;
     cv::Vec2i punto_fuga(0,0);
