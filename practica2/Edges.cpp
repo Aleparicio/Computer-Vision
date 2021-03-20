@@ -4,11 +4,8 @@
 #include <opencv2/imgproc.hpp>
 
 #include <iostream>
-#define CVUI_IMPLEMENTATION
-#include "cvui.h"
 #include "vanishing_points.hpp"
 #include "canny_operator.hpp"
-
 
 // https://answers.opencv.org/question/65222/is-there-a-way-to-keep-imwrite-from-overwriting-files/
 const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
@@ -41,7 +38,7 @@ const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
 
 int main(int argc, char* argv[]) {
 
-    bool rotate = true;
+    bool rotate = false;
     cv::VideoCapture cap;
     cv::Mat img;
     std::string WINDOW_NAME = "Vanishing point - ";
@@ -54,10 +51,8 @@ int main(int argc, char* argv[]) {
             std::cout << "Failed to connect to camera." << std::endl;
             return 1;
         }
-
     } else {
-
-        rotate = true;
+        rotate = false;
         WINDOW_NAME += argv[1];
         cap = cv::VideoCapture(argv[1]);
         if (!cap.isOpened()) {
@@ -75,7 +70,7 @@ int main(int argc, char* argv[]) {
         cap >> frame;
         if (frame.empty()) // end of video stream
             break;
-        if(rotate)
+        if (rotate)
             cv::rotate(frame, frame, cv::ROTATE_90_CLOCKWISE);
         frame = getVanishingPoints(frame);
 
@@ -88,43 +83,13 @@ int main(int argc, char* argv[]) {
             // Finish when ESC or q is pressed
             break;
         }
-        
-        cv::imshow( "Frame", frame );
+
+        cv::imshow("Frame", frame);
     }
 
     cap.release();
     return 0;
 }
 
-
 // image_path = cv::samples::findFile("../../images/hendrix/poster.pgm");
 // image_path = cv::samples::findFile("../../images/hendrix/pasillo2.pgm");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
