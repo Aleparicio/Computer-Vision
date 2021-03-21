@@ -83,7 +83,7 @@ void CannyGradient(cv::InputArray src, cv::OutputArray grad_x, cv::OutputArray g
     cv::Mat G = gaussianKernel(sigma, ksize);
     cv::Mat dG = gaussianDerivativeKernel(sigma, ksize);
 
-    // Convert input image to 16S
+    // Convert input image to CV_32F
     cv::Mat src_converted;
     src.getMat().convertTo(src_converted, CV_32F);
 
@@ -94,12 +94,12 @@ void CannyGradient(cv::InputArray src, cv::OutputArray grad_x, cv::OutputArray g
     // // x gradient
     // kernel = -G.t() * dG;
     // k = sumPositive(kernel);
-    // kernel /= k;
+    // // kernel /= k;
     // cv::filter2D(src_converted, grad_x, CV_32F, kernel);
     // // y gradient
     // kernel = -dG.t() * G;
     // k = sumPositive(kernel);
-    // kernel /= k;
+    // // kernel /= k;
     // cv::filter2D(src_converted, grad_y, CV_32F, kernel);
 
     // Kernels applied as separable filters

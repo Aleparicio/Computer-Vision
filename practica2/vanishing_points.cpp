@@ -79,10 +79,8 @@ cv::Mat getVanishingPoints(cv::Mat frame) {
     CannyGradient(frame_gray, grad_x, grad_y, 1.4, 9);
     normalizeGradients(grad_x, grad_y, grad_x, grad_y);
 
-    cv::Mat abs_grad_x, abs_grad_y;
-    //Para mostrar
-    //grad_x.convertTo(abs_grad_x, CV_8U, 0.5, 128);
-    //grad_y.convertTo(abs_grad_y, CV_8U, 0.5, 128);
+    grad_x.convertTo(grad_x, CV_16S);
+    grad_y.convertTo(grad_y, CV_16S);
     cv::Canny(grad_x, grad_y, dst, 30, 110, true);
 
     cv::Mat cdst;
