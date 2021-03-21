@@ -41,8 +41,9 @@ int main(int argc, char* argv[]) {
 
     // Calculate gradient
     if (kernel == "SOBEL") {
+        std::cout << "Using SOBEL kernel" << std::endl;
         // Apply gaussian filter
-        cv::GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 0, 0, cv::BORDER_DEFAULT);
+        cv::GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 1, 1, cv::BORDER_DEFAULT);
 
         int ddepth = CV_32F;
         int ksize = 3;
@@ -54,10 +55,12 @@ int main(int argc, char* argv[]) {
 
         // grad_x /= 4;
         // grad_y /= 4;
-        cv::normalize(grad_x, grad_x, -255, 255, cv::NORM_MINMAX);
-        cv::normalize(grad_y, grad_y, -255, 255, cv::NORM_MINMAX);
 
     } else if (kernel == "SCHARR") {
+        std::cout << "Using SCHARR kernel" << std::endl;
+        // Apply gaussian filter
+        cv::GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 1, 1, cv::BORDER_DEFAULT);
+
         int ddepth = CV_32F;
         int ksize = 3;
         int scale = 1;
@@ -70,31 +73,29 @@ int main(int argc, char* argv[]) {
 
         // grad_x /= 16;
         // grad_y /= 16;
-        cv::normalize(grad_x, grad_x, -255, 255, cv::NORM_MINMAX);
-        cv::normalize(grad_y, grad_y, -255, 255, cv::NORM_MINMAX);
 
     } else if (kernel == "CANNY") {
+        std::cout << "Using CANNY kernel" << std::endl;
         float sigma = 1;
         int ksize = 5;
         CannyGradient(src_gray, grad_x, grad_y, sigma, ksize);
-        cv::Mat abs_grad_x, abs_grad_y;
+
     } else {
         std::cout << "Unknown kernel: " << kernel << std::endl;
         return 1;
     }
 
-    // Max and min values of the gradientes
-    double min, max;
-    cv::minMaxLoc(grad_x, &min, &max);
-    std::cout << "Gradient X: " << min << " " << max << std::endl;
-    cv::minMaxLoc(grad_y, &min, &max);
-    std::cout << "Gradient Y: " << min << " " << max << std::endl;
+    // Normalize gradients
+    normalizeGradients(grad_x, grad_y, grad_x, grad_y);
 
-    cv::convertScaleAbs(grad_x, abs_grad_x, 0.5, 128);
-    cv::convertScaleAbs(grad_y, abs_grad_y, 0.5, 128);
+    // Max and min values of the gradientes
+    grad_x.convertTo(abs_grad_x, CV_8U, 0.5, 128);
+    grad_y.convertTo(abs_grad_y, CV_8U, 0.5, 128);
 
     cv::imshow(kernel + " Gradient in x direction", abs_grad_x);
     cv::imshow(kernel + " Gradient in y direction", abs_grad_y);
+    cv::imwrite(kernel + "-gradient-x.png", abs_grad_x);
+    cv::imwrite(kernel + "-gradient-y.png", abs_grad_y);
 
     // Gradient magnitude and angle
     grad_x.convertTo(grad_x, CV_32F);
@@ -105,18 +106,20 @@ int main(int argc, char* argv[]) {
 
     mag.convertTo(mag, CV_8U);
     angle.convertTo(angle, CV_8U, 128 / CV_PI);
+
     cv::imshow(kernel + " Gradient magnitude", mag);
     cv::imshow(kernel + " Gradient orientation", angle);
+    cv::imwrite(kernel + "-magnitude.png", mag);
+    cv::imwrite(kernel + "-orientation.png", angle);
 
     // Get edges using Canny gradient maxima
     grad_x.convertTo(grad_x, CV_16S);
     grad_y.convertTo(grad_y, CV_16S);
     cv::Mat edges;
-    cv::Canny(grad_x, grad_y, edges, 10, 100);
+    cv::Canny(grad_x, grad_y, edges, 20, 40);
 
     cv::imshow(kernel + " Edges", edges);
-
-    cv::waitKey(0); // Wait por a keystroke in the window
+    cv::imwrite(kernel + "-eges.png", edges);
 
     // Calculate lines with Hough transform
 
@@ -138,10 +141,11 @@ int main(int argc, char* argv[]) {
         pt1.y = cvRound(y0 + 1000 * (a));
         pt2.x = cvRound(x0 - 1000 * (-b));
         pt2.y = cvRound(y0 - 1000 * (a));
-        cv::line(cdst, pt1, pt2, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
+        cv::line(cdst, pt1, pt2, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
     }
     // Show results
     cv::imshow("Detected Lines (in red) - Standard Hough Line Transform", cdst);
+    cv::imwrite(kernel + "-lines.png", cdst);
 
     // // Probabilistic Line Transform
     // std::vector<cv::Vec4i> linesP;

@@ -2,6 +2,33 @@
 
 #include <iostream>
 
+void normalizeGradient(cv::InputArray src, cv::OutputArray dst, float min, float max) {
+    for (float i = 0; i < src.getMat().rows; i++) {
+        for (float j = 0; j < src.getMat().cols; j++) {
+            float val;
+            val = src.getMat().at<float>(i, j);
+            if (val < 0.0f)
+                dst.getMat().at<float>(i, j) = (val / std::abs(min)) * 255.0f;
+            else if (val > 0.0f)
+                dst.getMat().at<float>(i, j) = (val / max) * 255.0f;
+        }
+    }
+}
+
+void normalizeGradients(cv::InputArray src_x, cv::InputArray src_y,
+                        cv::OutputArray dst_x, cv::OutputArray dst_y) {
+    double min_x, min_y, max_x, max_y;
+    cv::minMaxLoc(src_x, &min_x, &max_x);
+    // std::cout << "Gradient X: " << min_x << " " << max_x << std::endl;
+    cv::minMaxLoc(src_y, &min_y, &max_y);
+    // std::cout << "Gradient Y: " << min_y << " " << max_y << std::endl;
+    double min = std::min(min_x, min_y);
+    double max = std::max(max_x, max_y);
+
+    normalizeGradient(src_x, dst_x, min, max);
+    normalizeGradient(src_y, dst_y, min, max);
+}
+
 cv::Mat gaussianKernel(float sigma, int n) {
 
     if (!(n & 1))
@@ -58,22 +85,31 @@ void CannyGradient(cv::InputArray src, cv::OutputArray grad_x, cv::OutputArray g
 
     // Convert input image to 16S
     cv::Mat src_converted;
-    src.getMat().convertTo(src_converted, CV_16S);
+    src.getMat().convertTo(src_converted, CV_32F);
 
     cv::Mat kernel;
     float k;
 
-    // x gradient
-    kernel = -G.t() * dG;
-    k = sumPositive(kernel);
+    // // Square kernels
+    // // x gradient
+    // kernel = -G.t() * dG;
+    // k = sumPositive(kernel);
     // kernel /= k;
-    cv::filter2D(src_converted, grad_x, CV_16S, kernel);
-    cv::normalize(grad_x.getMat(), grad_x.getMat(), -255, 255, cv::NORM_MINMAX);
+    // cv::filter2D(src_converted, grad_x, CV_32F, kernel);
+    // // y gradient
+    // kernel = -dG.t() * G;
+    // k = sumPositive(kernel);
+    // kernel /= k;
+    // cv::filter2D(src_converted, grad_y, CV_32F, kernel);
 
+    // Kernels applied as separable filters
+    // x gradient
+    cv::filter2D(src_converted, grad_x, CV_32F, G.t());
+    cv::filter2D(grad_x, grad_x, CV_32F, -dG);
     // y gradient
-    kernel = -dG.t() * G;
-    k = sumPositive(kernel);
-    // kernel /= k;
-    cv::filter2D(src_converted, grad_y, CV_16S, kernel);
-    cv::normalize(grad_y.getMat(), grad_y.getMat(), -255, 255, cv::NORM_MINMAX);
+    cv::filter2D(src_converted, grad_y, CV_32F, -dG.t());
+    cv::filter2D(grad_y, grad_y, CV_32F, G);
+
+    // cv::normalize(grad_x.getMat(), grad_x.getMat(), -255, 255, cv::NORM_MINMAX);
+    // cv::normalize(grad_y.getMat(), grad_y.getMat(), -255, 255, cv::NORM_MINMAX);
 }
