@@ -2,29 +2,54 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-
+#include <stdlib.h>
+#include <time.h>
+#include <iomanip>
 #include <iostream>
 
 enum tipoThreshold {OTSU, ADAPTATIVE};
 
 
+cv::Mat getDescriptorCalcs(cv::Mat frame){
+
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours( frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    std::vector<cv::Moments> momentos(contours.size() );
+    std::vector<double> perimeters(contours.size(), 0.0);
+    std::vector<double> area(contours.size(), 0.0);
+    double momentosHu[contours.size()][7];
+
+    for( size_t i = 0; i < contours.size(); i++ ){
+        momentos[i] = moments( contours[i] );
+        cv::HuMoments(momentos[i], momentosHu[i]);
+        perimeters[i] = arcLength( contours[i], true );
+        area[i] = contourArea(contours[i]);
+    }
+}
+
+
+// https://answers.opencv.org/question/168403/connected-components-with-opencv/
 cv::Mat getConnectComponents(cv::Mat frame){
+
+    srand(time(NULL));
     cv::Mat labels;
     int nlabels = cv::connectedComponents(frame, labels, 4, CV_32S); 
-    std::vector<cv::Vec3b> colors(nlabels);
-    colors[0] = cv::Vec3b(0, 0, 0);//background
-    for (int label = 1; label < nLabels; ++label) {
-        colors[label] = cv::Vec3b((rand() & 255), (rand() & 255), (rand() & 255));}
-     at dst(frame.size(), CV_8UC3);
- for (int r = 0; r < dst.rows; ++r) {
-     for (int c = 0; c < dst.cols; ++c) {
-int label = labelImage.at<int>(r, c);
-Vec3b &pixel = dst.at<Vec3b>(r, c);
 
-   pixel = colors[label];}}
-   imshow("Connected Components", dst);}
-    
-    return labels;
+    std::vector<cv::Vec3b> colores(nlabels, cv::Vec3b(0, 0, 0));
+    for (int i = 1; i < nlabels; ++i) 
+        colores[i] = cv::Vec3b(rand() % 255, rand() % 255, rand() % 255);
+
+    cv::Mat dst(frame.size(), CV_8UC3);
+    for (int row = 0; row < dst.rows; ++row) {
+        for (int col = 0; col < dst.cols; ++col) {
+            int label = labels.at<int>(row, col);
+            cv::Vec3b &pixel = dst.at<cv::Vec3b>(row, col);
+            pixel = colores[label];
+        }
+    }
+
+    return dst;
 }
 
 
@@ -67,6 +92,10 @@ int main(int argc, char* argv[]) {
     cv::Mat connected;
     connected = getConnectComponents(thresholded);
     cv::imshow("Connected components", connected);
+
+
+
+
     cv::waitKey();
     return 0;
 }
