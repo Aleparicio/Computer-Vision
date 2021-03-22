@@ -29,6 +29,21 @@ cv::Mat getDescriptorCalcs(cv::Mat frame){
         perimeters[i] = arcLength( contours[i], true );
         area[i] = contourArea(contours[i]);
     }
+
+    // https://docs.opencv.org/3.4/d0/d49/tutorial_moments.html
+    cv::Mat drawing = cv::Mat::zeros( frame.size(), CV_8UC3 );
+    for( size_t i = 0; i< contours.size(); i++ ) {
+        cv::Scalar color = cv::Scalar( rand() % 256, rand() % 256, rand() % 256 );
+        drawContours( drawing, contours, (int)i, color, 2 );
+    }
+
+    std::cout << "\t Info: Area and Contour Length \n";
+    for( size_t i = 0; i < contours.size(); i++ ){
+        std::cout << " * Contour[" << i << "] " << " - Area OpenCV: " << area[i]
+                  << " - Length: " << perimeters[i] << std::endl;
+    }
+
+    return drawing;
 }
 
 
@@ -41,7 +56,7 @@ cv::Mat getConnectComponents(cv::Mat frame){
 
     std::vector<cv::Vec3b> colores(nlabels, cv::Vec3b(0, 0, 0));
     for (int i = 1; i < nlabels; ++i) 
-        colores[i] = cv::Vec3b(rand() % 255, rand() % 255, rand() % 255);
+        colores[i] = cv::Vec3b(rand() % 256, rand() % 256, rand() % 256);
 
     cv::Mat dst(frame.size(), CV_8UC3);
     for (int row = 0; row < dst.rows; ++row) {
@@ -93,7 +108,9 @@ int main(int argc, char* argv[]) {
     connected = getConnectComponents(thresholded);
     cv::imshow("Connected components", connected);
 
-
+    cv::Mat contours;
+    contours = getDescriptorCalcs(thresholded);
+    cv::imshow("Contornos encontrados", contours);
 
 
     cv::waitKey();
