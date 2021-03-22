@@ -5,40 +5,44 @@
 
 #include <iostream>
 
-enum tipoThreshold {OTSU, ADAPTATIVE};
+enum tipoThreshold {
+    OTSU,
+    ADAPTATIVE
+};
 
-
-cv::Mat getConnectComponents(cv::Mat frame){
+cv::Mat getConnectComponents(cv::Mat frame) {
     cv::Mat labels;
-    int nlabels = cv::connectedComponents(frame, labels, 4, CV_32S); 
+    int nlabels = cv::connectedComponents(frame, labels, 4, CV_32S);
     std::vector<cv::Vec3b> colors(nlabels);
-    colors[0] = cv::Vec3b(0, 0, 0);//background
+    colors[0] = cv::Vec3b(0, 0, 0); //background
     for (int label = 1; label < nLabels; ++label) {
-        colors[label] = cv::Vec3b((rand() & 255), (rand() & 255), (rand() & 255));}
-     at dst(frame.size(), CV_8UC3);
- for (int r = 0; r < dst.rows; ++r) {
-     for (int c = 0; c < dst.cols; ++c) {
-int label = labelImage.at<int>(r, c);
-Vec3b &pixel = dst.at<Vec3b>(r, c);
+        colors[label] = cv::Vec3b((rand() & 255), (rand() & 255), (rand() & 255));
+    }
+    at dst(frame.size(), CV_8UC3);
+    for (int r = 0; r < dst.rows; ++r) {
+        for (int c = 0; c < dst.cols; ++c) {
+            int label = labelImage.at<int>(r, c);
+            Vec3b& pixel = dst.at<Vec3b>(r, c);
 
-   pixel = colors[label];}}
-   imshow("Connected Components", dst);}
-    
-    return labels;
+            pixel = colors[label];
+        }
+    }
+    imshow("Connected Components", dst);
 }
 
+return labels;
+}
 
+cv::Mat thresholding(cv::Mat frame, tipoThreshold type) {
 
-cv::Mat thresholding(cv::Mat frame, tipoThreshold type){
-
-    cv::Mat thresholded; 
+    cv::Mat thresholded;
 
     switch (type) {
     case OTSU:
         cv::threshold(frame, thresholded, 0.0, 255.0, cv::THRESH_OTSU);
         cv::bitwise_not(thresholded, thresholded);
         break;
-    
+
     case ADAPTATIVE:
         cv::adaptiveThreshold(frame, thresholded, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 7, 20);
         break;
@@ -49,7 +53,6 @@ cv::Mat thresholding(cv::Mat frame, tipoThreshold type){
 
     return thresholded;
 }
-
 
 int main(int argc, char* argv[]) {
 
@@ -70,6 +73,3 @@ int main(int argc, char* argv[]) {
     cv::waitKey();
     return 0;
 }
-
-// image_path = cv::samples::findFile("../../images/hendrix/poster.pgm");
-// image_path = cv::samples::findFile("../../images/hendrix/pasillo2.pgm");
