@@ -1,3 +1,0 @@
-/home/alejandro/Desktop/Vision/practica3/build/CMakeFiles/rebuild_cache.dir
-/home/alejandro/Desktop/Vision/practica3/build/CMakeFiles/main.dir
-/home/alejandro/Desktop/Vision/practica3/build/CMakeFiles/edit_cache.dir
