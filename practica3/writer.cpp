@@ -1,5 +1,57 @@
 #include "writer.h"
 
+void Writer::getMetrics(std::vector<objeto>& medias, std::vector<objeto>& varianzas){
+    
+    medias.clear();
+    varianzas.clear();
+    std::string item;
+    std::ifstream file(fichero);
+
+    if(file){
+
+        file >> item;         
+        while(item.compare("Estadísticas") != 0)
+            file >> item;
+
+        file >> item;
+        while(!file.eof()){
+
+            objeto media(item);
+            file >> item;
+            file >> item; // Media:
+            media.perimeter = stof(item);
+            file >> item;
+            media.area = stof(item);
+            file >> item;
+            media.firstHuMoment = stof(item);
+            file >> item;
+            media.secondHuMoment = stof(item);
+            file >> item;
+            media.thirdHuMoment = stof(item);
+            medias.push_back(media);
+
+            file >> item;
+            objeto varianza(item);
+            file >> item; // Varianza:
+            file >> item;
+            varianza.perimeter = stof(item);
+            file >> item;
+            varianza.area = stof(item);
+            file >> item;
+            varianza.firstHuMoment = stof(item);
+            file >> item;
+            varianza.secondHuMoment = stof(item);
+            file >> item;
+            varianza.thirdHuMoment = stof(item);
+            file >> item;
+            varianzas.push_back(varianza);
+        }
+    } else {
+        std::cerr << "No existe el fichero." << std::endl;
+    }  
+    file.close();
+}
+
 void Writer::getItems(std::vector<objeto>& items){
 
     items.clear();
@@ -7,8 +59,7 @@ void Writer::getItems(std::vector<objeto>& items){
     std::ifstream file(fichero);
 
     if(file){
-        file >> item;
-                
+        file >> item;         
         while(item.compare("Estadísticas") != 0){
                     
             objeto obj(item);
@@ -30,7 +81,6 @@ void Writer::getItems(std::vector<objeto>& items){
     } else {
         std::cerr << "No existe el fichero." << std::endl;
     }  
-
     file.close();
 }
 

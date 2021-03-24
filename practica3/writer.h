@@ -34,6 +34,7 @@ class Writer {
 
         Writer(std::string file) : fichero(file) {}
         void getItems(std::vector<objeto>& items);
+        void getMetrics(std::vector<objeto>& medias, std::vector<objeto>& varianzas);
         void writeMetrics(std::vector<objeto>& everyItem, std::vector<objeto>& grupos,
                           std::vector<descriptores>& medias, std::vector<descriptores>& varianzas);
 

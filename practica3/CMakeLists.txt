@@ -12,3 +12,6 @@ target_link_libraries( main ${OpenCV_LIBS} )
 
 add_executable( aprender aprender.cpp ${SOURCES})
 target_link_libraries( aprender ${OpenCV_LIBS} )
+
+add_executable( reconocer reconocer.cpp ${SOURCES})
+target_link_libraries( reconocer ${OpenCV_LIBS} )
