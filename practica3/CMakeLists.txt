@@ -6,6 +6,9 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "-O3")
 
-set(SOURCES )
+set(SOURCES utils.cpp writer.cpp)
 add_executable( main main.cpp ${SOURCES})
 target_link_libraries( main ${OpenCV_LIBS} )
+
+add_executable( aprender aprender.cpp ${SOURCES})
+target_link_libraries( aprender ${OpenCV_LIBS} )
