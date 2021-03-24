@@ -353,3 +353,4 @@ MigrationBackup/
 .vscode
 practica2/Edges1.cpp
 practica2/Edges2.cpp
+*.avi
