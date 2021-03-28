@@ -34,8 +34,10 @@ int main(int argc, char* argv[]) {
 
     // Para cada objeto
     for (int i = 0; i < components.size(); i++) {
+        std::cout << "Objeto " << i + 1 << std::endl;
+
         // Calcular descriptores del objeto
-        Descriptors x = descriptors(frame);
+        Descriptors x = descriptors(components[i]);
 
         cv::imshow("Componentes " + std::to_string(i + 1), components[i]);
         // drawConnectedComponents(components[i], connected);
@@ -44,7 +46,7 @@ int main(int argc, char* argv[]) {
         cv::imshow("Contornos " + std::to_string(i + 1), contours);
 
         // Predecir la clase
-        std::vector<std::string> possible_classes = mc.predict(x);
+        auto possible_classes = mc.predict(x);
 
         std::cout << "Predicción " << i + 1 << ": ";
         switch (possible_classes.size()) {
@@ -52,12 +54,12 @@ int main(int argc, char* argv[]) {
             std::cout << "Objeto desconocido" << std::endl;
             break;
         case 1:
-            std::cout << "Es: " << possible_classes[0] << std::endl;
+            std::cout << possible_classes.begin()->second << std::endl;
             break;
         default:
-            std::cout << "Dudas entre las clases:";
+            std::cout << "Dudas entre las clases ";
             for (auto& c : possible_classes) {
-                std::cout << " " << c;
+                std::cout << " " << c.second;
             }
             std::cout << std::endl;
         }

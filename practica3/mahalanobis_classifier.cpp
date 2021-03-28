@@ -1,14 +1,12 @@
 #include <iostream>
 #include <fstream>
 
+#include <map>
+#include <set>
+
 #include "mahalanobis_classifier.hpp"
 #include "descriptors.hpp"
 
-// Leer modelo de un fichero
-//
-// Formato del modelo:
-// clase N media_descriptores media_varianza
-// ...
 void MahalanobisClassifier::load_model(const std::string& file) {
     std::string name;
     int N;
@@ -37,11 +35,6 @@ void MahalanobisClassifier::load_model(const std::string& file) {
     is.close();
 }
 
-// Guardar modelo en un fichero
-//
-// Formato del modelo:
-// clase N media_descriptores media_varianza
-// ...
 void MahalanobisClassifier::save_model(const std::string& file) {
     // Creación de los datos del nuevo fichero
     std::ofstream os(file);
@@ -50,7 +43,6 @@ void MahalanobisClassifier::save_model(const std::string& file) {
     }
 }
 
-// Entrenar el modelo creando las estadísticas de los descriptores
 void MahalanobisClassifier::train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y) {
     // Obtener los nombres de todas las clases
     std::vector<std::string> classes = Y; // Crear copia del vector
@@ -105,15 +97,32 @@ void MahalanobisClassifier::train(const std::vector<Descriptors>& X, const std::
     }
 }
 
-std::vector<std::string> MahalanobisClassifier::predict(const Descriptors& x) {
-    // Devuelve un vector con las posibles clases
+std::set<std::pair<float, std::string>> MahalanobisClassifier::predict(const Descriptors& x) const {
+    // Calcular distancia de Mahalanobis del objeto x con cada clase
+    std::set<std::pair<float, std::string>> mahalanobis_distances;
 
-    // Si el objeto pasa el test de Mahalanobis con una sola clase, el sistema declara que se trata de esa clase
+    // Los elementos del set se van ordenado por el float de la pareja
+    // en orden decreciente automáticamente
+    for (auto& entry : stats) {
+        float total_distance = 0;
+        for (int i = 0; i < x.data.size(); i++) {
+            float distance = pow(x.data[i] - entry.second.mean.data[i], 2) / entry.second.variance.data[i];
+            total_distance += distance;
+        }
+        mahalanobis_distances.emplace(total_distance, entry.first);
+    }
 
-    // Si pasa el test con más de un objeto, declarará que tiene dudas entre las clases
+    for (auto& entry : mahalanobis_distances)
+        std::cout << entry.second << ": " << entry.first << std::endl;
 
-    // Si no pasa el test con ninguna clase, declarará que el objeto es desconocido
-    // return std::vector<std::string>{};
-    // return std::vector<std::string>{"vagon"};
-    return std::vector<std::string>{"circulo", "vagon"};
+    auto it = mahalanobis_distances.begin();
+    while (it != mahalanobis_distances.end()) {
+        if (it->first > chi_square_05[5]) {
+            it = mahalanobis_distances.erase(it);
+        } else {
+            it++;
+        }
+    }
+
+    return mahalanobis_distances;
 }
