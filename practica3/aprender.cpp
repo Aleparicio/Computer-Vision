@@ -7,7 +7,7 @@
 #include <fstream>
 
 #include "descriptors.hpp"
-#include "bayes_classifier.hpp"
+#include "mahalanobis_classifier.hpp"
 
 // Leer muestras de un fichero
 //
@@ -101,11 +101,11 @@ int main(int argc, char* argv[]) {
     // }
 
     // Entrenar modelo
-    BayesClassifier bc;
-    bc.train(X, Y);
+    MahalanobisClassifier mc;
+    mc.train(X, Y);
 
     write_samples(samples_file, X, Y, files);
-    bc.save_model(model_file);
+    mc.save_model(model_file);
 
     return 0;
 }

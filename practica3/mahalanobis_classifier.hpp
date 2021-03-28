@@ -14,7 +14,7 @@ struct ClassStats {
     ClassStats(Descriptors _mean, Descriptors _variance) : mean(_mean), variance(_variance) {}
 };
 
-class BayesClassifier {
+class MahalanobisClassifier {
   public:
     // Estadísticas de cada clase
     //

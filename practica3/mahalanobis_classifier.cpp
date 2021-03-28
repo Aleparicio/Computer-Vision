@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "bayes_classifier.hpp"
+#include "mahalanobis_classifier.hpp"
 #include "descriptors.hpp"
 
 // Leer modelo de un fichero
@@ -9,7 +9,7 @@
 // Formato del modelo:
 // clase N media_descriptores media_varianza
 // ...
-void BayesClassifier::load_model(const std::string& file) {
+void MahalanobisClassifier::load_model(const std::string& file) {
     std::string name;
     Descriptors mean;
     Descriptors variance;
@@ -39,7 +39,7 @@ void BayesClassifier::load_model(const std::string& file) {
 // Formato del modelo:
 // clase N media_descriptores media_varianza
 // ...
-void BayesClassifier::save_model(const std::string& file) {
+void MahalanobisClassifier::save_model(const std::string& file) {
     // Creación de los datos del nuevo fichero
     std::ofstream os(file);
     for (const auto& entry : stats) {
@@ -48,7 +48,7 @@ void BayesClassifier::save_model(const std::string& file) {
 }
 
 // Entrenar el modelo creando las estadísticas de los descriptores
-void BayesClassifier::train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y) {
+void MahalanobisClassifier::train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y) {
     // Obtener los nombres de todas las clases
     std::vector<std::string> classes = Y; // Crear copia del vector
     std::sort(classes.begin(), classes.end());
@@ -102,7 +102,7 @@ void BayesClassifier::train(const std::vector<Descriptors>& X, const std::vector
     }
 }
 
-std::vector<std::string> BayesClassifier::predict(const Descriptors& x) {
+std::vector<std::string> MahalanobisClassifier::predict(const Descriptors& x) {
     // Devuelve un vector con las posibles clases
 
     // Si el objeto pasa el test de Mahalanobis con una sola clase, el sistema declara que se trata de esa clase
