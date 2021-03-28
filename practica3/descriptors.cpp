@@ -112,7 +112,6 @@ void getConnectedComponents(cv::InputArray frame, std::vector<cv::Mat>& componen
 }
 
 void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type) {
-
     cv::Mat thresholded;
 
     switch (type) {

@@ -20,6 +20,8 @@ int main(int argc, char* argv[]) {
     if (frame.empty())
         return 0;
 
+    cv::imshow("Imagen", frame);
+
     // Cargar modelo
     MahalanobisClassifier mc;
     mc.load_model(model_file);
@@ -35,16 +37,16 @@ int main(int argc, char* argv[]) {
         // Calcular descriptores del objeto
         Descriptors x = descriptors(frame);
 
-        cv::imshow("Componentes " + std::to_string(i), components[i]);
+        cv::imshow("Componentes " + std::to_string(i + 1), components[i]);
         // drawConnectedComponents(components[i], connected);
         // cv::imshow("Componentes conexas " + std::to_string(i), connected);
         drawContours(components[i], contours);
-        cv::imshow("Contornos " + std::to_string(i), contours);
+        cv::imshow("Contornos " + std::to_string(i + 1), contours);
 
         // Predecir la clase
         std::vector<std::string> possible_classes = mc.predict(x);
 
-        std::cout << "Predicción " << i << ": ";
+        std::cout << "Predicción " << i + 1 << ": ";
         switch (possible_classes.size()) {
         case 0:
             std::cout << "Objeto desconocido" << std::endl;
@@ -59,6 +61,6 @@ int main(int argc, char* argv[]) {
             }
             std::cout << std::endl;
         }
-        cv::waitKey();
     }
+    cv::waitKey();
 }
