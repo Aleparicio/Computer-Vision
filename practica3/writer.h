@@ -1,44 +1,15 @@
-#include <string>
-#include "utils.h"
-#include <fstream>
-#include <iostream>
+#pragma once
 
-#ifndef WRITER_H
-#define WRITER_H
-
-struct objeto {
-
-    std::string name;
-    float perimeter = 0.0;
-    float area = 0.0;
-    float firstHuMoment = 0.0;
-    float secondHuMoment = 0.0;
-    float thirdHuMoment = 0.0;
-
-    objeto(std::string nombre) : name(nombre) {}
-
-    void set(descriptores d){
-        perimeter = d.perimeter;
-        area = d.area;
-        firstHuMoment = d.fHuMoment;
-        secondHuMoment = d.secHuMoment;
-        thirdHuMoment = d.thirdHuMoment;
-    }
-};
+#include "descriptors.hpp"
 
 class Writer {
 
-    std::string fichero;
-    
-    public:
+    std::string file;
 
-        Writer(std::string file) : fichero(file) {}
-        void getItems(std::vector<objeto>& items);
-        void getMetrics(std::vector<objeto>& medias, std::vector<objeto>& varianzas);
-        void writeMetrics(std::vector<objeto>& everyItem, std::vector<objeto>& grupos,
-                          std::vector<descriptores>& medias, std::vector<descriptores>& varianzas);
-
+  public:
+    Writer(std::string _file) : file(_file) {}
+    void getItems(std::vector<Object>& items);
+    void getMetrics(std::vector<Object>& medias, std::vector<Object>& varianzas);
+    void writeMetrics(std::vector<Object>& everyItem, std::vector<Object>& grupos,
+                      std::vector<Descriptors>& medias, std::vector<Descriptors>& varianzas);
 };
-
-
-#endif

@@ -34,7 +34,7 @@ cv::Mat getDescriptorCalcs(cv::Mat frame) {
     return drawing;
 }
 
-descriptores getDescriptors(cv::Mat frame) {
+Descriptor getDescriptors(cv::Mat frame) {
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
@@ -53,18 +53,18 @@ descriptores getDescriptors(cv::Mat frame) {
 
     int biggest = 0;
     float biggestArea = 0.0;
-    for(int i = 0; i < contours.size(); i++){
-        if(biggestArea < area[i]){
+    for (int i = 0; i < contours.size(); i++) {
+        if (biggestArea < area[i]) {
             biggestArea = area[i];
             biggest = i;
         }
     }
 
-    descriptores d;
+    Descriptor d;
     d.perimeter = perimeters[biggest];
     d.area = area[biggest];
-    d.fHuMoment = momentosHu[biggest][0];
-    d.secHuMoment = momentosHu[biggest][1];
+    d.firstHuMoment = momentosHu[biggest][0];
+    d.secondHuMoment = momentosHu[biggest][1];
     d.thirdHuMoment = momentosHu[biggest][2];
     return d;
 }
