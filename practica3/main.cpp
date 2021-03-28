@@ -9,21 +9,28 @@ int main(int argc, char* argv[]) {
 
     cv::Mat thresholded, frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
 
+
+
     cv::imshow("Frame-pre-ADAPTATIVE", frame);
+    cv::imwrite("original.png", frame);
     thresholding(frame, thresholded, ADAPTATIVE);
     cv::imshow("Frame-post-ADAPTATIVE", thresholded);
+    cv::imwrite("adapatative.png", thresholded);
 
     cv::imshow("Frame-pre-OTSU", frame);
     thresholding(frame, thresholded, OTSU);
     cv::imshow("Frame-post-OTSU", thresholded);
+    cv::imwrite("otsu.png", thresholded);
 
     cv::Mat connected;
     drawConnectedComponents(thresholded, connected);
     cv::imshow("Connected components", connected);
+    cv::imwrite("Connected.png", connected);
 
     cv::Mat contours;
     drawContours(thresholded, contours);
     cv::imshow("Contornos encontrados", contours);
+    cv::imwrite("Contornos.png", contours);
 
     cv::waitKey();
     return 0;

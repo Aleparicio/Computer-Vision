@@ -30,7 +30,7 @@ Descriptors descriptors(cv::InputArray frame) {
                        momentosHu[biggest][0], momentosHu[biggest][1], momentosHu[biggest][2]);
 }
 
-void drawContours(cv::InputArray frame, cv::OutputArray out) {
+void drawContours(cv::InputArray frame, cv::Mat& out) {
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
@@ -61,10 +61,10 @@ void drawContours(cv::InputArray frame, cv::OutputArray out) {
                   << " - Length: " << perimeters[i] << std::endl;
     }
 
-    out.getMat() = drawing;
+    out = drawing;
 }
 // https://answers.opencv.org/question/168403/connected-components-with-opencv/
-void drawConnectedComponents(cv::InputArray frame, cv::OutputArray out) {
+void drawConnectedComponents(cv::InputArray frame, cv::Mat& out) {
 
     srand(time(NULL));
     cv::Mat labels;
@@ -83,12 +83,10 @@ void drawConnectedComponents(cv::InputArray frame, cv::OutputArray out) {
         }
     }
 
-    out.getMat() = dst;
+    out = dst;
 }
 
-void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type) {
-
-    cv::Mat thresholded;
+void thresholding(cv::InputArray frame, cv::Mat& thresholded, ThresholdType type) {
 
     switch (type) {
     case OTSU:
@@ -103,6 +101,4 @@ void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type)
     default:
         break;
     }
-
-    out.getMat() = thresholded;
 }

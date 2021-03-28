@@ -56,8 +56,8 @@ inline std::istream& operator>>(std::istream& is, Descriptors& d) {
 Descriptors descriptors(cv::InputArray array);
 
 // Get image contours
-void drawContours(cv::InputArray frame, cv::OutputArray out);
+void drawContours(cv::InputArray frame, cv::Mat& out);
 
-void drawConnectedComponents(cv::InputArray frame, cv::OutputArray out);
+void drawConnectedComponents(cv::InputArray frame, cv::Mat& out);
 
-void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type);
+void thresholding(cv::InputArray frame, cv::Mat& thresholded, ThresholdType type);
