@@ -40,7 +40,7 @@ struct Descriptors {
 
 inline std::ostream& operator<<(std::ostream& os, const Descriptors& d) {
     os << d.data[0];
-    for (int i = 1; i < d.data.size() - 1; i++) {
+    for (int i = 1; i < d.data.size(); i++) {
         os << ' ' << d.data[i];
     }
     return os;
@@ -53,12 +53,14 @@ inline std::istream& operator>>(std::istream& is, Descriptors& d) {
     return is;
 }
 
-// Get file descriptors
+// Calcula los descriptores de una imagen binaria en la que se supone que sólo hay un objeto
 Descriptors descriptors(cv::InputArray array);
 
-// Get image contours
 void drawContours(cv::InputArray frame, cv::OutputArray out);
 
 void drawConnectedComponents(cv::InputArray frame, cv::OutputArray out);
 
 void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type);
+
+// Devuelve un vector con cada componente conexa de frame separada en una imagen binaria
+void getConnectedComponents(cv::InputArray frame, std::vector<cv::Mat>& components);

@@ -11,6 +11,7 @@
 // ...
 void MahalanobisClassifier::load_model(const std::string& file) {
     std::string name;
+    int N;
     Descriptors mean;
     Descriptors variance;
 
@@ -22,11 +23,13 @@ void MahalanobisClassifier::load_model(const std::string& file) {
             std::istringstream ss(line);
             // Leer clase
             ss >> name;
+            // Leer número de muestras
+            ss >> N;
             // Leer medias
             ss >> mean;
             // Leer varianzas
             ss >> variance;
-            stats[name] = ClassStats(mean, variance);
+            stats[name] = ClassStats(N, mean, variance);
         }
     } else {
         std::cerr << "No existe el fichero " << file << std::endl;
@@ -110,4 +113,7 @@ std::vector<std::string> MahalanobisClassifier::predict(const Descriptors& x) {
     // Si pasa el test con más de un objeto, declarará que tiene dudas entre las clases
 
     // Si no pasa el test con ninguna clase, declarará que el objeto es desconocido
+    // return std::vector<std::string>{};
+    // return std::vector<std::string>{"vagon"};
+    return std::vector<std::string>{"circulo", "vagon"};
 }

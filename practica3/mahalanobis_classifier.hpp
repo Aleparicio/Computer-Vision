@@ -11,7 +11,8 @@ struct ClassStats {
     Descriptors variance;
 
     ClassStats() {}
-    ClassStats(Descriptors _mean, Descriptors _variance) : mean(_mean), variance(_variance) {}
+    ClassStats(int _N, Descriptors _mean, Descriptors _variance)
+        : N(_N), mean(_mean), variance(_variance) {}
 };
 
 class MahalanobisClassifier {

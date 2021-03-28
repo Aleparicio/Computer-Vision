@@ -1,42 +1,64 @@
-// #include <opencv2/core.hpp>
-// #include <opencv2/imgcodecs.hpp>
-// #include <opencv2/highgui.hpp>
-// #include <opencv2/imgproc.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
 
-// #include <time.h>
-// #include <iomanip>
-// #include <list>
-// #include <iostream>
-// #include <fstream>
+#include <vector>
 
-// #include "utils.h"
-// #include "writer.h"
+#include "descriptors.hpp"
+#include "mahalanobis_classifier.hpp"
 
-// using namespace std;
-// using namespace cv;
+int main(int argc, char* argv[]) {
+    const std::string model_file = "objetos.txt";
 
-// int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cout << "Invocar como: reconocer nomfich" << std::endl;
+        return 0;
+    }
 
-//     string file = "objetos.txt";
-//     if (argc != 2) {
-//         std::cout << "Invocar como: reconocer nomfich" << std::endl;
-//         return 0;
-//     }
+    // Lectura de la imagen a clasificar
+    std::string image_path = cv::samples::findFile(argv[1]);
+    cv::Mat frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
+    if (frame.empty())
+        return 0;
 
-//     // Lectura del nuevo item
-//     std::string image_path = cv::samples::findFile(argv[1]);
-//     cv::Mat frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
-//     if (frame.empty())
-//         return 0;
+    // Cargar modelo
+    MahalanobisClassifier mc;
+    mc.load_model(model_file);
 
-//     Writer wrt(file);
-//     std::vector<Object> medias, varianzas;
-//     wrt.getMetrics(medias, varianzas);
+    // Obtener objetos de la imagen
+    cv::Mat thresholded, connected, contours;
+    thresholding(frame, thresholded, OTSU);
+    std::vector<cv::Mat> components;
+    getConnectedComponents(thresholded, components);
 
-//     for (int i = 0; i < medias.size(); ++i) {
-//         cout << medias[i].name << "\t" << medias[i].perimeter << "\t" << medias[i].firstHuMoment
-//              << "\t" << medias[i].secondHuMoment << "\t" << medias[i].thirdHuMoment << "\n";
-//         cout << varianzas[i].name << "\t" << varianzas[i].perimeter << "\t" << varianzas[i].firstHuMoment
-//              << "\t" << varianzas[i].secondHuMoment << "\t" << varianzas[i].thirdHuMoment << "\n";
-//     }
-// }
+    // Para cada objeto
+    for (int i = 0; i < components.size(); i++) {
+        // Calcular descriptores del objeto
+        Descriptors x = descriptors(frame);
+
+        cv::imshow("Componentes " + std::to_string(i), components[i]);
+        // drawConnectedComponents(components[i], connected);
+        // cv::imshow("Componentes conexas " + std::to_string(i), connected);
+        drawContours(components[i], contours);
+        cv::imshow("Contornos " + std::to_string(i), contours);
+
+        // Predecir la clase
+        std::vector<std::string> possible_classes = mc.predict(x);
+
+        std::cout << "Predicción " << i << ": ";
+        switch (possible_classes.size()) {
+        case 0:
+            std::cout << "Objeto desconocido" << std::endl;
+            break;
+        case 1:
+            std::cout << "Es: " << possible_classes[0] << std::endl;
+            break;
+        default:
+            std::cout << "Dudas entre las clases:";
+            for (auto& c : possible_classes) {
+                std::cout << " " << c;
+            }
+            std::cout << std::endl;
+        }
+        cv::waitKey();
+    }
+}

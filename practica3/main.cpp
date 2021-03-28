@@ -25,6 +25,19 @@ int main(int argc, char* argv[]) {
     drawContours(thresholded, contours);
     cv::imshow("Contornos encontrados", contours);
 
+    std::vector<cv::Mat> components;
+    getConnectedComponents(thresholded, components);
+
+    for (int i = 0; i < components.size(); i++) {
+        cv::imshow("Componentes " + std::to_string(i), components[i]);
+        drawConnectedComponents(components[i], connected);
+        cv::imshow("Componentes conexas " + std::to_string(i), connected);
+        drawContours(components[i], contours);
+        cv::imshow("Contornos " + std::to_string(i), contours);
+        cv::waitKey();
+    }
+
     cv::waitKey();
+
     return 0;
 }

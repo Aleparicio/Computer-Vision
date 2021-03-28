@@ -61,7 +61,7 @@ void drawContours(cv::InputArray frame, cv::OutputArray out) {
                   << " - Length: " << perimeters[i] << std::endl;
     }
 
-    out.getMat() = drawing;
+    out.assign(drawing);
 }
 // https://answers.opencv.org/question/168403/connected-components-with-opencv/
 void drawConnectedComponents(cv::InputArray frame, cv::OutputArray out) {
@@ -83,7 +83,32 @@ void drawConnectedComponents(cv::InputArray frame, cv::OutputArray out) {
         }
     }
 
-    out.getMat() = dst;
+    out.assign(dst);
+}
+
+void getConnectedComponents(cv::InputArray frame, std::vector<cv::Mat>& components) {
+    cv::Mat labels;
+    int nlabels = cv::connectedComponents(frame, labels, 4, CV_32S);
+
+    // La label 0 label representa el fondo
+
+    // Inicializar matrices a 0 (una por cada componente conexa)
+    components = std::vector<cv::Mat>(nlabels - 1);
+    for (auto& comp : components) {
+        comp = cv::Mat::zeros(frame.rows(), frame.cols(), CV_8U);
+    }
+
+    std::cout << "Número de labels" << std::endl;
+
+    for (int row = 0; row < frame.rows(); ++row) {
+        for (int col = 0; col < frame.cols(); ++col) {
+            int label = labels.at<int>(row, col);
+            if (label > 0) {
+                // std::cout << label << std::endl;
+                components[label - 1].at<char>(row, col) = (char)255;
+            }
+        }
+    }
 }
 
 void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type) {
@@ -104,5 +129,5 @@ void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type)
         break;
     }
 
-    out.getMat() = thresholded;
+    out.assign(thresholded);
 }
