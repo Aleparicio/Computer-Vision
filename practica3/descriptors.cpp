@@ -54,9 +54,9 @@ void drawContours(cv::InputArray frame, cv::OutputArray out) {
         drawContours(drawing, contours, (int)i, color, 2);
     }
 
-    std::cout << "\t Info: Area and Contour Length \n";
+    std::cout << "Area and Contour Length:\n";
     for (size_t i = 0; i < contours.size(); i++) {
-        std::cout << " * Contour[" << i << "] "
+        std::cout << "  * Contour[" << i << "]"
                   << " - Area OpenCV: " << area[i]
                   << " - Length: " << perimeters[i] << std::endl;
     }
@@ -97,8 +97,6 @@ void getConnectedComponents(cv::InputArray frame, std::vector<cv::Mat>& componen
     for (auto& comp : components) {
         comp = cv::Mat::zeros(frame.rows(), frame.cols(), CV_8U);
     }
-
-    std::cout << "Número de labels" << std::endl;
 
     for (int row = 0; row < frame.rows(); ++row) {
         for (int col = 0; col < frame.cols(); ++col) {

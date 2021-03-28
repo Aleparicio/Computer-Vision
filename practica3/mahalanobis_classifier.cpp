@@ -43,7 +43,7 @@ void MahalanobisClassifier::save_model(const std::string& file) {
     }
 }
 
-void MahalanobisClassifier::train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y) {
+void MahalanobisClassifier::train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y, VarianceType vtype, float a_priori_percent) {
     // Obtener los nombres de todas las clases
     std::vector<std::string> classes = Y; // Crear copia del vector
     std::sort(classes.begin(), classes.end());
@@ -80,18 +80,36 @@ void MahalanobisClassifier::train(const std::vector<Descriptors>& X, const std::
     }
 
     // Calcular varianzas
-    for (auto& c : classes) {
-        // Sumar las distancias al cuadrado de las muestras con la media
-        Descriptors squares_sum;
-        for (int i = 0; i < stats[c].N; i++) {
-            for (int k = 0; k < squares_sum.data.size(); k++) {
-                squares_sum.data[k] += pow(samples_dict[c][i].data[k] - stats[c].mean.data[k], 2);
+    if (vtype == CLASSIC) {
+        for (auto& c : classes) {
+            // Sumar las distancias al cuadrado de las muestras con la media
+            Descriptors squares_sum;
+            for (int i = 0; i < stats[c].N; i++) {
+                for (int k = 0; k < squares_sum.data.size(); k++) {
+                    squares_sum.data[k] += pow(samples_dict[c][i].data[k] - stats[c].mean.data[k], 2);
+                }
+            }
+            // Dividir todos los descriptores por el número de muestras - 1
+            if (stats[c].N != 1) {
+                for (int k = 0; k < squares_sum.data.size(); k++) {
+                    stats[c].variance.data[k] = squares_sum.data[k] / (stats[c].N - 1);
+                }
             }
         }
-        // Dividir todos los descriptores por el número de muestras - 1
-        if (stats[c].N != 1) {
+    } else if (vtype == A_PRIORI_ESTIMATION) {
+        // estimador a priori: cuadrado de a_priori_percent% de la media del descriptor
+        for (auto& c : classes) {
+            // Sumar las distancias al cuadrado de las muestras con la media
+            Descriptors squares_sum;
+            for (int i = 0; i < stats[c].N; i++) {
+                for (int k = 0; k < squares_sum.data.size(); k++) {
+                    squares_sum.data[k] += pow(samples_dict[c][i].data[k] - stats[c].mean.data[k], 2);
+                }
+            }
+            // Dividir todos los descriptores por el número de muestras - 1
             for (int k = 0; k < squares_sum.data.size(); k++) {
-                stats[c].variance.data[k] = squares_sum.data[k] / (stats[c].N - 1);
+                float variance_estimator = pow((a_priori_percent / 100) * stats[c].mean.data[k], 2);
+                stats[c].variance.data[k] = (variance_estimator + squares_sum.data[k]) / stats[c].N;
             }
         }
     }
@@ -112,8 +130,9 @@ std::set<std::pair<float, std::string>> MahalanobisClassifier::predict(const Des
         mahalanobis_distances.emplace(total_distance, entry.first);
     }
 
-    for (auto& entry : mahalanobis_distances)
+    for (auto& entry : mahalanobis_distances) {
         std::cout << entry.second << ": " << entry.first << std::endl;
+    }
 
     auto it = mahalanobis_distances.begin();
     while (it != mahalanobis_distances.end()) {

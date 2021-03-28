@@ -9,8 +9,6 @@ int main(int argc, char* argv[]) {
 
     cv::Mat thresholded, frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
 
-
-
     cv::imshow("Frame-pre-ADAPTATIVE", frame);
     cv::imwrite("original.png", frame);
     thresholding(frame, thresholded, ADAPTATIVE);

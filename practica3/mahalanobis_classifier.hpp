@@ -7,6 +7,11 @@
 
 #include "descriptors.hpp"
 
+enum VarianceType {
+    CLASSIC,
+    A_PRIORI_ESTIMATION
+};
+
 struct ClassStats {
     int N; // número de muestras
     Descriptors mean;
@@ -39,7 +44,7 @@ class MahalanobisClassifier {
     void load_model(const std::string& file);
 
     // Entrenar el modelo creando las estadísticas de los descriptores para cada clase
-    void train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y);
+    void train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y, VarianceType vtype = CLASSIC, float a_priori_percent = 1);
 
     // Predice la clase de un objeto dados sus descriptores
     //

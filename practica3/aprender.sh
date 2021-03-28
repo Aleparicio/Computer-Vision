@@ -4,6 +4,7 @@
 
 if [ $# -ne 2 ]; then
     echo "Uso: $0 ejecutable directorio"
+    exit 1
 fi
 
 ejecutable=$1
