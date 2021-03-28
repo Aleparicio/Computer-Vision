@@ -7,9 +7,9 @@
 // Leer modelo de un fichero
 //
 // Formato del modelo:
-// clase media_descriptores media_varianza
+// clase N media_descriptores media_varianza
 // ...
-void BayesClassifier::load_model(std::string file) {
+void BayesClassifier::load_model(const std::string& file) {
     std::string name;
     Descriptors mean;
     Descriptors variance;
@@ -37,78 +37,72 @@ void BayesClassifier::load_model(std::string file) {
 // Guardar modelo en un fichero
 //
 // Formato del modelo:
-// clase media_descriptores media_varianza
+// clase N media_descriptores media_varianza
 // ...
-void BayesClassifier::save_model(std::string file) {
+void BayesClassifier::save_model(const std::string& file) {
     // Creación de los datos del nuevo fichero
     std::ofstream os(file);
     for (const auto& entry : stats) {
-        os << entry.first << entry.second.mean << entry.second.variance << std::endl;
+        os << entry.first << "  " << entry.second.N << "  " << entry.second.mean << "  " << entry.second.variance << std::endl;
     }
 }
 
 // Entrenar el modelo creando las estadísticas de los descriptores
-void BayesClassifier::train(std::vector<Descriptors> X, std::vector<std::string> Y) {
-    //     std::vector<Object>
-    //         grupos;
-    //     std::vector<int> ocurrencias;
-    //     for (int i = 0; i < everyItem.size(); ++i) {
-    //         bool existe = false;
-    //         for (int j = 0; j < grupos.size(); ++j) {
-    //             if (everyItem[i].name.compare(grupos[j].name) == 0) {
-    //                 existe = true;
-    //                 grupos[j].descs.area += everyItem[i].area;
-    //                 grupos[j].descs.perimeter += everyItem[i].perimeter;
-    //                 grupos[j].descs.firstHuMoment += everyItem[i].firstHuMoment;
-    //                 grupos[j].secondHuMoment += everyItem[i].secondHuMoment;
-    //                 grupos[j].thirdHuMoment += everyItem[i].thirdHuMoment;
-    //                 ocurrencias[j] += 1;
-    //             }
-    //         }
-    //         if (!existe) {
-    //             grupos.push_back(everyItem[i]);
-    //             ocurrencias.push_back(1);
-    //         }
-    //     }
+void BayesClassifier::train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y) {
+    // Obtener los nombres de todas las clases
+    std::vector<std::string> classes = Y; // Crear copia del vector
+    std::sort(classes.begin(), classes.end());
+    // Eliminar elementos duplicados
+    std::vector<std::string>::iterator it;
+    it = std::unique(classes.begin(), classes.end());
+    classes.resize(std::distance(classes.begin(), it));
 
-    //     // Medias
-    //     std::vector<Descriptor> medias(grupos.size(), Descriptor());
-    //     for (int i = 0; i < grupos.size(); ++i) {
-    //         medias[i].area = grupos[i].area / (float)ocurrencias[i];
-    //         medias[i].perimeter = grupos[i].perimeter / (float)ocurrencias[i];
-    //         medias[i].firstHuMoment = grupos[i].firstHuMoment / (float)ocurrencias[i];
-    //         medias[i].secondHuMoment = grupos[i].secondHuMoment / (float)ocurrencias[i];
-    //         medias[i].thirdHuMoment = grupos[i].thirdHuMoment / (float)ocurrencias[i];
-    //     }
+    // Ordenar las muestras de entrenamiento por clases
+    std::unordered_map<std::string, std::vector<Descriptors>> samples_dict;
+    for (int i = 0; i < X.size(); i++) {
+        samples_dict[Y[i]].push_back(X[i]);
+    }
 
-    //     // Varianzas
-    //     std::vector<Descriptor> varianzas(grupos.size(), Descriptor());
-    //     for (int i = 0; i < grupos.size(); ++i) {
-    //         for (int j = 0; j < everyItem.size(); ++j) {
-    //             if (everyItem[j].name.compare(grupos[i].name) == 0) {
-    //                 varianzas[i].area += pow((everyItem[j].area - medias[i].area), 2);
-    //                 varianzas[i].perimeter += pow((everyItem[j].perimeter - medias[i].perimeter), 2);
-    //                 varianzas[i].firstHuMoment += pow((everyItem[j].firstHuMoment - medias[i].firstHuMoment), 2);
-    //                 varianzas[i].secondHuMoment += pow((everyItem[j].secondHuMoment - medias[i].secondHuMoment), 2);
-    //                 varianzas[i].thirdHuMoment += pow((everyItem[j].thirdHuMoment - medias[i].thirdHuMoment), 2);
-    //             }
-    //         }
-    //     }
+    // Número de muestras por clase
+    for (auto& c : classes) {
+        stats[c].N = samples_dict[c].size();
+    }
 
-    //     for (int i = 0; i < varianzas.size(); ++i) {
-    //         if (ocurrencias[i] == 1) {
-    //             varianzas[i] = Descriptor();
-    //         } else {
-    //             varianzas[i].area /= (ocurrencias[i] - 1);
-    //             varianzas[i].perimeter /= (ocurrencias[i] - 1);
-    //             varianzas[i].firstHuMoment /= (ocurrencias[i] - 1);
-    //             varianzas[i].secondHuMoment /= (ocurrencias[i] - 1);
-    //             varianzas[i].thirdHuMoment /= (ocurrencias[i] - 1);
-    //         }
-    //     }
+    // Calcular medias
+    for (auto& c : classes) {
+        // Sumar los descriptores de todas las muestras
+        Descriptors sum;
+        for (int i = 0; i < stats[c].N; i++) {
+            // Sumar valores de los descriptores
+            for (int k = 0; k < sum.data.size(); k++) {
+                sum.data[k] += samples_dict[c][i].data[k];
+            }
+        }
+        // Dividir todos los descriptores por el número de muestras
+        for (int k = 0; k < sum.data.size(); k++) {
+            stats[c].mean.data[k] = sum.data[k] / stats[c].N;
+        }
+    }
+
+    // Calcular varianzas
+    for (auto& c : classes) {
+        // Sumar las distancias al cuadrado de las muestras con la media
+        Descriptors squares_sum;
+        for (int i = 0; i < stats[c].N; i++) {
+            for (int k = 0; k < squares_sum.data.size(); k++) {
+                squares_sum.data[k] += pow(samples_dict[c][i].data[k] - stats[c].mean.data[k], 2);
+            }
+        }
+        // Dividir todos los descriptores por el número de muestras - 1
+        if (stats[c].N != 1) {
+            for (int k = 0; k < squares_sum.data.size(); k++) {
+                stats[c].variance.data[k] = squares_sum.data[k] / (stats[c].N - 1);
+            }
+        }
+    }
 }
 
-std::vector<std::string> BayesClassifier::predict(Descriptors x) {
+std::vector<std::string> BayesClassifier::predict(const Descriptors& x) {
     // Devuelve un vector con las posibles clases
 
     // Si el objeto pasa el test de Mahalanobis con una sola clase, el sistema declara que se trata de esa clase

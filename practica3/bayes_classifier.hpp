@@ -6,6 +6,7 @@
 #include "descriptors.hpp"
 
 struct ClassStats {
+    int N; // número de muestras
     Descriptors mean;
     Descriptors variance;
 
@@ -21,9 +22,9 @@ class BayesClassifier {
     // stats[class].stat.descriptor
     std::unordered_map<std::string, ClassStats> stats;
 
-    void save_model(std::string file);
-    void load_model(std::string file);
+    void save_model(const std::string& file);
+    void load_model(const std::string& file);
 
-    void train(std::vector<Descriptors> X, std::vector<std::string> Y);
-    std::vector<std::string> predict(Descriptors x);
+    void train(const std::vector<Descriptors>& X, const std::vector<std::string>& Y);
+    std::vector<std::string> predict(const Descriptors& x);
 };

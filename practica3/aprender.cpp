@@ -22,7 +22,7 @@ void read_samples(const std::string& file, std::vector<Descriptors>& X,
 
     std::ifstream is(file);
 
-    std::cout << file << std::endl;
+    // std::cout << file << std::endl;
 
     if (is) {
         std::string line;
@@ -89,23 +89,23 @@ int main(int argc, char* argv[]) {
     thresholding(frame, frame, OTSU);
     Descriptors d = descriptors(frame);
 
-    std::cout << "Descriptores" << d << std::endl;
+    // std::cout << "Descriptores" << d << std::endl;
 
     // Añadir la muestra al conjunto de datos
     X.push_back(d);
     Y.push_back(argv[2]);
     files.push_back(argv[1]);
 
-    for (int i = 0; i < Y.size(); i++) {
-        std::cout << Y[i] << std::endl;
-    }
+    // for (int i = 0; i < Y.size(); i++) {
+    //     std::cout << Y[i] << std::endl;
+    // }
 
     // Entrenar modelo
     BayesClassifier bc;
     bc.train(X, Y);
 
     write_samples(samples_file, X, Y, files);
-    // bc.save_model(model_file);
+    bc.save_model(model_file);
 
     return 0;
 }
