@@ -3,103 +3,109 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <stdlib.h>
-#include <time.h>
-#include <iomanip>
-#include <list>
-#include <iostream>
-#include "utils.h"
-#include "writer.h"
+
 #include <fstream>
 
-using namespace std;
-using namespace cv;
+#include "descriptors.hpp"
+#include "bayes_classifier.hpp"
+
+// Leer muestras de un fichero
+//
+// Formato de las muestras:
+// clase fichero descriptores
+// ...
+void read_samples(const std::string& file, std::vector<Descriptors>& X,
+                  std::vector<std::string>& Y, std::vector<std::string>& files) {
+    // std::cout << "leer fichero" << std::endl;
+    std::string sample;
+    Descriptors descs;
+
+    std::ifstream is(file);
+
+    std::cout << file << std::endl;
+
+    if (is) {
+        std::string line;
+        while (std::getline(is, line)) {
+            std::istringstream ss(line);
+            // std::cout << "Entrado" << std::endl;
+            // Read label
+            ss >> sample;
+            // std::cout << "Label " << sample << std::endl;
+            Y.push_back(sample);
+            // Read file
+            ss >> sample;
+            // std::cout << "File " << sample << std::endl;
+            files.push_back(sample);
+            // Read descriptors
+            ss >> descs;
+            // std::cout << "Descs " << descs << std::endl;
+            X.push_back(descs);
+            // std::cout << std::endl;
+        }
+    } else {
+        std::cerr << "No existe el fichero " << file << std::endl;
+    }
+    is.close();
+    // std::cout << "fin leer fichero" << std::endl;
+}
+
+// Escribir las muestras en un fichero
+//
+// Formato de las muestras:
+// clase fichero descriptores
+// ...
+void write_samples(const std::string& file, const std::vector<Descriptors>& X,
+                   const std::vector<std::string>& Y, const std::vector<std::string>& files) {
+    std::ofstream os(file);
+    for (int i = 0; i < X.size(); ++i) {
+        os << Y[i] << " " << files[i] << " " << X[i] << std::endl;
+    }
+}
 
 int main(int argc, char* argv[]) {
+    const std::string model_file = "objetos.txt";
+    const std::string samples_file = "muestras.txt";
 
-    string fichero = "objetos.txt";
     if (argc != 3) {
         std::cout << "Invocar como: aprender nomfich nomobj" << std::endl;
         return 0;
     }
 
-    // Lectura del nuevo item
+    // Lectura de las muestras del fichero
+    std::vector<Descriptors> X;     // descriptores
+    std::vector<std::string> Y;     // etiquetas
+    std::vector<std::string> files; // ficheros de cada muestra
+
+    read_samples(samples_file, X, Y, files);
+
+    // Lectura de la nueva muestra de entreamiento
     std::string image_path = cv::samples::findFile(argv[1]);
     cv::Mat frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
-    frame = thresholding(frame, OTSU);
     if (frame.empty())
         return 0;
 
-    // Lectura del fichero
-    std::vector<Objeto> everyItem;
-    Writer wrt(fichero);
-    wrt.getItems(everyItem);
+    // Calcular los descriptores de la muestra
+    thresholding(frame, frame, OTSU);
+    Descriptors d = descriptors(frame);
 
-    // Adición de un nuevo ítem
-    Descriptor d = getDescriptors(frame);
-    Objeto elemento(argv[2]);
-    elemento.set(d);
-    everyItem.push_back(elemento);
+    std::cout << "Descriptores" << d << std::endl;
 
-    // Creación de las estadísticas
-    std::vector<Objeto> grupos;
-    std::vector<int> ocurrencias;
-    for (int i = 0; i < everyItem.size(); ++i) {
-        bool existe = false;
-        for (int j = 0; j < grupos.size(); ++j) {
-            if (everyItem[i].name.compare(grupos[j].name) == 0) {
-                existe = true;
-                grupos[j].area += everyItem[i].area;
-                grupos[j].perimeter += everyItem[i].perimeter;
-                grupos[j].firstHuMoment += everyItem[i].firstHuMoment;
-                grupos[j].secondHuMoment += everyItem[i].secondHuMoment;
-                grupos[j].thirdHuMoment += everyItem[i].thirdHuMoment;
-                ocurrencias[j] += 1;
-            }
-        }
+    // Añadir la muestra al conjunto de datos
+    X.push_back(d);
+    Y.push_back(argv[2]);
+    files.push_back(argv[1]);
 
-        if (!existe) {
-            grupos.push_back(everyItem[i]);
-            ocurrencias.push_back(1);
-        }
+    for (int i = 0; i < Y.size(); i++) {
+        std::cout << Y[i] << std::endl;
     }
 
-    // Medias
-    std::vector<Descriptor> medias(grupos.size(), Descriptor());
-    for (int i = 0; i < grupos.size(); ++i) {
-        medias[i].area = grupos[i].area / (float)ocurrencias[i];
-        medias[i].perimeter = grupos[i].perimeter / (float)ocurrencias[i];
-        medias[i].firstHuMoment = grupos[i].firstHuMoment / (float)ocurrencias[i];
-        medias[i].secondHuMoment = grupos[i].secondHuMoment / (float)ocurrencias[i];
-        medias[i].thirdHuMoment = grupos[i].thirdHuMoment / (float)ocurrencias[i];
-    }
+    // Entrenar modelo
+    BayesClassifier bc;
+    bc.train(X, Y);
 
-    // Varianzas
-    std::vector<Descriptor> varianzas(grupos.size(), Descriptor());
-    for (int i = 0; i < grupos.size(); ++i) {
-        for (int j = 0; j < everyItem.size(); ++j) {
-            if (everyItem[j].name.compare(grupos[i].name) == 0) {
-                varianzas[i].area += pow((everyItem[j].area - medias[i].area), 2);
-                varianzas[i].perimeter += pow((everyItem[j].perimeter - medias[i].perimeter), 2);
-                varianzas[i].firstHuMoment += pow((everyItem[j].firstHuMoment - medias[i].firstHuMoment), 2);
-                varianzas[i].secondHuMoment += pow((everyItem[j].secondHuMoment - medias[i].secondHuMoment), 2);
-                varianzas[i].thirdHuMoment += pow((everyItem[j].thirdHuMoment - medias[i].thirdHuMoment), 2);
-            }
-        }
-    }
-
-    for (int i = 0; i < varianzas.size(); ++i) {
-        if (ocurrencias[i] == 1) {
-            varianzas[i] = Descriptor();
-        } else {
-            varianzas[i].area /= (ocurrencias[i] - 1);
-            varianzas[i].perimeter /= (ocurrencias[i] - 1);
-            varianzas[i].firstHuMoment /= (ocurrencias[i] - 1);
-            varianzas[i].secondHuMoment /= (ocurrencias[i] - 1);
-            varianzas[i].thirdHuMoment /= (ocurrencias[i] - 1);
-        }
-    }
-
-    wrt.writeMetrics(everyItem, grupos, medias, varianzas);
+    write_samples(samples_file, X, Y, files);
+    // bc.save_model(model_file);
 
     return 0;
 }

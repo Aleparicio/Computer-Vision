@@ -1,6 +1,36 @@
-#include "utils.h"
+#include "descriptors.hpp"
 
-cv::Mat getDescriptorCalcs(cv::Mat frame) {
+Descriptors descriptors(cv::InputArray frame) {
+
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    std::vector<cv::Moments> momentos(contours.size());
+    std::vector<double> perimeters(contours.size(), 0.0);
+    std::vector<double> area(contours.size(), 0.0);
+    double momentosHu[contours.size()][7];
+
+    for (size_t i = 0; i < contours.size(); i++) {
+        momentos[i] = cv::moments(contours[i]);
+        cv::HuMoments(momentos[i], momentosHu[i]);
+        perimeters[i] = cv::arcLength(contours[i], true);
+        area[i] = cv::contourArea(contours[i]);
+    }
+
+    int biggest = 0;
+    float biggestArea = 0.0;
+    for (int i = 0; i < contours.size(); i++) {
+        if (biggestArea < area[i]) {
+            biggestArea = area[i];
+            biggest = i;
+        }
+    }
+
+    return Descriptors(perimeters[biggest], area[biggest],
+                       momentosHu[biggest][0], momentosHu[biggest][1], momentosHu[biggest][2]);
+}
+
+void drawContours(cv::InputArray frame, cv::OutputArray out) {
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
@@ -31,46 +61,10 @@ cv::Mat getDescriptorCalcs(cv::Mat frame) {
                   << " - Length: " << perimeters[i] << std::endl;
     }
 
-    return drawing;
+    out.getMat() = drawing;
 }
-
-Descriptor getDescriptors(cv::Mat frame) {
-
-    std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
-
-    std::vector<cv::Moments> momentos(contours.size());
-    std::vector<double> perimeters(contours.size(), 0.0);
-    std::vector<double> area(contours.size(), 0.0);
-    double momentosHu[contours.size()][7];
-
-    for (size_t i = 0; i < contours.size(); i++) {
-        momentos[i] = moments(contours[i]);
-        cv::HuMoments(momentos[i], momentosHu[i]);
-        perimeters[i] = arcLength(contours[i], true);
-        area[i] = contourArea(contours[i]);
-    }
-
-    int biggest = 0;
-    float biggestArea = 0.0;
-    for (int i = 0; i < contours.size(); i++) {
-        if (biggestArea < area[i]) {
-            biggestArea = area[i];
-            biggest = i;
-        }
-    }
-
-    Descriptor d;
-    d.perimeter = perimeters[biggest];
-    d.area = area[biggest];
-    d.firstHuMoment = momentosHu[biggest][0];
-    d.secondHuMoment = momentosHu[biggest][1];
-    d.thirdHuMoment = momentosHu[biggest][2];
-    return d;
-}
-
 // https://answers.opencv.org/question/168403/connected-components-with-opencv/
-cv::Mat getConnectComponents(cv::Mat frame) {
+void drawConnectedComponents(cv::InputArray frame, cv::OutputArray out) {
 
     srand(time(NULL));
     cv::Mat labels;
@@ -89,10 +83,10 @@ cv::Mat getConnectComponents(cv::Mat frame) {
         }
     }
 
-    return dst;
+    out.getMat() = dst;
 }
 
-cv::Mat thresholding(cv::Mat frame, tipoThreshold type) {
+void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type) {
 
     cv::Mat thresholded;
 
@@ -103,12 +97,12 @@ cv::Mat thresholding(cv::Mat frame, tipoThreshold type) {
         break;
 
     case ADAPTATIVE:
-        cv::adaptiveThreshold(frame, thresholded, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 99, 1);
+        cv::adaptiveThreshold(frame, thresholded, 255.0, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 99, 1);
         break;
 
     default:
         break;
     }
 
-    return thresholded;
+    out.getMat() = thresholded;
 }
