@@ -6,7 +6,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "-O3")
 
-set(SOURCES descriptors.cpp bayes_classifier.cpp)
+set(SOURCES descriptors.cpp mahalanobis_classifier.cpp)
 add_executable( main main.cpp ${SOURCES})
 target_link_libraries( main ${OpenCV_LIBS} )
 

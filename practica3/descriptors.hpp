@@ -32,15 +32,16 @@ struct Descriptors {
     Descriptors() {}
 
     Descriptors(float _perimeter, float _area, float _firstHuMoment, float _secondHuMoment, float _thirdHuMoment)
-        : area(_area), perimeter(_perimeter),
+        : perimeter(_perimeter), area(_area),
           firstHuMoment(_firstHuMoment), secondHuMoment(_secondHuMoment), thirdHuMoment(_thirdHuMoment) {}
 
     Descriptors(std::array<float, 5> _data) : data(_data) {}
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Descriptors& d) {
-    for (int i = 0; i < d.data.size(); i++) {
-        os << d.data[i] << ' ';
+    os << d.data[0];
+    for (int i = 1; i < d.data.size() - 1; i++) {
+        os << ' ' << d.data[i];
     }
     return os;
 }
