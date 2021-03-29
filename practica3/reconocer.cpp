@@ -15,10 +15,22 @@ int main(int argc, char* argv[]) {
     }
 
     // Lectura de la imagen a clasificar
-    std::string image_path = cv::samples::findFile(argv[1]);
-    cv::Mat frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
-    if (frame.empty())
-        return 0;
+    cv::Mat frame;
+    std::string image_path;
+    try {
+        image_path = cv::samples::findFile(argv[1]);
+        frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
+    } catch (const std::exception& e) {
+        std::cerr << "No se ha podido abrir la imagen " << argv[1] << std::endl;
+        return 1;
+    }
+
+    if (frame.empty()) {
+        std::cerr << "La imagen está vacía" << argv[1] << std::endl;
+        return 1;
+    }
+
+    std::cout << "Reconociendo imagen: " << image_path << std::endl;
 
     cv::imshow("Imagen", frame);
 

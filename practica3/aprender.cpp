@@ -80,10 +80,22 @@ int main(int argc, char* argv[]) {
     read_samples(samples_file, X, Y, files);
 
     // Lectura de la nueva muestra de entreamiento
-    std::string image_path = cv::samples::findFile(argv[1]);
-    cv::Mat frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
-    if (frame.empty())
-        return 0;
+    cv::Mat frame;
+    std::string image_path;
+    try {
+        image_path = cv::samples::findFile(argv[1]);
+        frame = cv::imread(image_path, cv::IMREAD_GRAYSCALE);
+    } catch (const std::exception& e) {
+        std::cout << "No se ha podido abrir la imagen " << argv[1] << std::endl;
+        return 1;
+    }
+
+    if (frame.empty()) {
+        std::cout << "La imagen está vacía" << argv[1] << std::endl;
+        return 1;
+    }
+
+    std::cout << "Aprendiendo imagen: " << image_path << std::endl;
 
     // Calcular los descriptores de la muestra
     thresholding(frame, frame, OTSU);
