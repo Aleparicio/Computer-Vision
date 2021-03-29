@@ -116,11 +116,10 @@ void drawComponentsNumbers(cv::InputArray frame, cv::OutputArray out, const std:
     frame.copyTo(out);
 
     for (int i = 0; i < components.size(); i++) {
-        // cv::Vec3i color = cv::Vec3i(rand() % 255, rand() % 255, rand() % 255);
-
         findContours(components[i], contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
         // Obtener momentos centrales
+        // http://devdoc.net/linux/OpenCV-3.2.0/d0/d49/tutorial_moments.html
         std::vector<cv::Moments> mu(contours.size());
         for (size_t j = 0; j < contours.size(); j++) {
             mu[j] = moments(contours[j], false);

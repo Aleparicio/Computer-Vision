@@ -106,7 +106,7 @@ void MahalanobisClassifier::train(const std::vector<Descriptors>& X, const std::
                     squares_sum.data[k] += pow(samples_dict[c][i].data[k] - stats[c].mean.data[k], 2);
                 }
             }
-            // Dividir todos los descriptores por el número de muestras - 1
+            // Sumar estimador y suma de distancias al cuadrado y dividir por número de muestras
             for (int k = 0; k < squares_sum.data.size(); k++) {
                 float variance_estimator = pow((a_priori_percent / 100) * stats[c].mean.data[k], 2);
                 stats[c].variance.data[k] = (variance_estimator + squares_sum.data[k]) / stats[c].N;

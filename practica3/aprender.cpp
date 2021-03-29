@@ -16,38 +16,29 @@
 // ...
 void read_samples(const std::string& file, std::vector<Descriptors>& X,
                   std::vector<std::string>& Y, std::vector<std::string>& files) {
-    // std::cout << "leer fichero" << std::endl;
     std::string sample;
     Descriptors descs;
 
     std::ifstream is(file);
 
-    // std::cout << file << std::endl;
-
     if (is) {
         std::string line;
         while (std::getline(is, line)) {
             std::istringstream ss(line);
-            // std::cout << "Entrado" << std::endl;
             // Read label
             ss >> sample;
-            // std::cout << "Label " << sample << std::endl;
             Y.push_back(sample);
             // Read file
             ss >> sample;
-            // std::cout << "File " << sample << std::endl;
             files.push_back(sample);
             // Read descriptors
             ss >> descs;
-            // std::cout << "Descs " << descs << std::endl;
             X.push_back(descs);
-            // std::cout << std::endl;
         }
     } else {
         std::cerr << "No existe el fichero " << file << std::endl;
     }
     is.close();
-    // std::cout << "fin leer fichero" << std::endl;
 }
 
 // Escribir las muestras en un fichero
@@ -101,16 +92,10 @@ int main(int argc, char* argv[]) {
     thresholding(frame, frame, OTSU);
     Descriptors d = descriptors(frame);
 
-    // std::cout << "Descriptores" << d << std::endl;
-
     // Añadir la muestra al conjunto de datos
     X.push_back(d);
     Y.push_back(argv[2]);
     files.push_back(argv[1]);
-
-    // for (int i = 0; i < Y.size(); i++) {
-    //     std::cout << Y[i] << std::endl;
-    // }
 
     // Entrenar modelo
     MahalanobisClassifier mc;
