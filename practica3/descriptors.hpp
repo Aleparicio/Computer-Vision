@@ -64,3 +64,6 @@ void thresholding(cv::InputArray frame, cv::OutputArray out, ThresholdType type)
 
 // Devuelve un vector con cada componente conexa de frame separada en una imagen binaria
 void getConnectedComponents(cv::InputArray frame, std::vector<cv::Mat>& components);
+
+// Añade sobre la imagen de entrada el número de cada componente conexa del vector components
+void drawComponentsNumbers(cv::InputArray frame, cv::OutputArray out, const std::vector<cv::Mat>& components);

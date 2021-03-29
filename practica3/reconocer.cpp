@@ -32,6 +32,10 @@ int main(int argc, char* argv[]) {
     std::vector<cv::Mat> components;
     getConnectedComponents(thresholded, components);
 
+    drawConnectedComponents(thresholded, connected);
+    drawComponentsNumbers(connected, connected, components);
+    cv::imshow("Componentes conexas", connected);
+
     // Para cada objeto
     for (int i = 0; i < components.size(); i++) {
         std::cout << "Objeto " << i + 1 << std::endl;
@@ -39,11 +43,11 @@ int main(int argc, char* argv[]) {
         // Calcular descriptores del objeto
         Descriptors x = descriptors(components[i]);
 
-        cv::imshow("Componentes " + std::to_string(i + 1), components[i]);
+        // cv::imshow("Componentes " + std::to_string(i + 1), components[i]);
         // drawConnectedComponents(components[i], connected);
         // cv::imshow("Componentes conexas " + std::to_string(i), connected);
-        drawContours(components[i], contours);
-        cv::imshow("Contornos " + std::to_string(i + 1), contours);
+        // drawContours(components[i], contours);
+        // cv::imshow("Contornos " + std::to_string(i + 1), contours);
 
         // Predecir la clase
         auto possible_classes = mc.predict(x);

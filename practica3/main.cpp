@@ -42,6 +42,10 @@ int main(int argc, char* argv[]) {
         cv::waitKey();
     }
 
+    cv::Mat connected_numbers = cv::Mat::zeros(frame.size(), CV_8U);
+    drawComponentsNumbers(connected_numbers, connected_numbers, components);
+    cv::imshow("Componentes conexas numeros", connected_numbers);
+
     cv::waitKey();
 
     return 0;

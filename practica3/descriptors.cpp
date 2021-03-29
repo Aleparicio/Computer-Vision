@@ -103,9 +103,44 @@ void getConnectedComponents(cv::InputArray frame, std::vector<cv::Mat>& componen
             int label = labels.at<int>(row, col);
             if (label > 0) {
                 // std::cout << label << std::endl;
-                components[label - 1].at<char>(row, col) = (char)255;
+                components[label - 1].at<unsigned char>(row, col) = 255;
             }
         }
+    }
+}
+
+void drawComponentsNumbers(cv::InputArray frame, cv::OutputArray out, const std::vector<cv::Mat>& components) {
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
+
+    frame.copyTo(out);
+
+    for (int i = 0; i < components.size(); i++) {
+        // cv::Vec3i color = cv::Vec3i(rand() % 255, rand() % 255, rand() % 255);
+
+        findContours(components[i], contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+
+        // Obtener momentos centrales
+        std::vector<cv::Moments> mu(contours.size());
+        for (size_t j = 0; j < contours.size(); j++) {
+            mu[j] = moments(contours[j], false);
+        }
+        std::vector<cv::Point2f> mc(contours.size());
+        for (size_t j = 0; j < contours.size(); j++) {
+            mc[j] = cv::Point2f(static_cast<float>(mu[j].m10 / mu[j].m00), static_cast<float>(mu[j].m01 / mu[j].m00));
+        }
+
+        int biggestContour = 0;
+        int biggestSize = 0;
+        for (size_t j = 0; j < contours.size(); j++) {
+            if (contours.size() > biggestSize) {
+                biggestSize = contours.size();
+                biggestContour = j;
+            }
+        }
+
+        // Poner número en el centro del contorno más grande
+        cv::putText(out.getMat(), std::to_string(i + 1), mc[biggestContour], cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
     }
 }
 
