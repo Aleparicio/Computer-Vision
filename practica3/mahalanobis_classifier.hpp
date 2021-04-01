@@ -36,7 +36,7 @@ class MahalanobisClassifier {
     // Guardar modelo en un fichero
     //
     // Formato del modelo:
-    // clase N media_descriptores media_varianza
+    // clase N medias_descriptores varianzas_descriptores
     // ...
     void save_model(const std::string& file);
 
@@ -52,7 +52,8 @@ class MahalanobisClassifier {
     // Si pasa el test con más de un objeto, declarará que tiene dudas entre las clases
     // Si no pasa el test con ninguna clase, declarará que el objeto es desconocido
     //
-    // La distancia sigue una distribución Chi cuadrado con <número de descriptores> grados de libertad
-    // La distancia de la muestra es menor que Chi^2_0.5(<número descriptores>) pertenece a la clase con un 95% de probabilidad
+    // La distancia de Mahalanobis sigue una distribución Chi cuadrado con <número de descriptores> grados de libertad
+    // Si la distancia de la muestra con una clase es menor que Chi^2_0.05(<número descriptores>), pertenece
+    // a la clase con un 95% de probabilidad
     std::set<std::pair<float, std::string>> predict(const Descriptors& x) const;
 };

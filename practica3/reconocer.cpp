@@ -50,7 +50,8 @@ int main(int argc, char* argv[]) {
 
     // Para cada objeto
     for (int i = 0; i < components.size(); i++) {
-        std::cout << "Objeto " << i + 1 << std::endl;
+        std::cout << std::endl
+                  << "Objeto " << i + 1 << std::endl;
 
         // Calcular descriptores del objeto
         Descriptors x = descriptors(components[i]);
@@ -60,6 +61,8 @@ int main(int argc, char* argv[]) {
         // cv::imshow("Componentes conexas " + std::to_string(i), connected);
         // drawContours(components[i], contours);
         // cv::imshow("Contornos " + std::to_string(i + 1), contours);
+
+        std::cout << "Descriptores: " << x << std::endl;
 
         // Predecir la clase
         auto possible_classes = mc.predict(x);
@@ -79,7 +82,6 @@ int main(int argc, char* argv[]) {
             }
             std::cout << std::endl;
         }
-        std::cout << std::endl;
     }
     cv::waitKey();
 }

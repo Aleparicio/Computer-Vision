@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Compilar el proyecto, aprender las muestras y clasificar los nuevos objetos
+
 cmake -Bbuild
 cd build
 make
@@ -13,9 +15,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo
-echo "Reconocer"
-echo "---------"
 for reco in ../images/imagenesL3/reco*; do
+    echo
+    echo "Reconocer"
+    echo "---------"
     build/reconocer $reco
 done

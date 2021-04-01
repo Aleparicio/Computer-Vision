@@ -130,10 +130,12 @@ std::set<std::pair<float, std::string>> MahalanobisClassifier::predict(const Des
         mahalanobis_distances.emplace(total_distance, entry.first);
     }
 
+    std::cout << "Distancias de Mahalanobis:" << std::endl;
     for (auto& entry : mahalanobis_distances) {
-        std::cout << entry.second << ": " << entry.first << std::endl;
+        std::cout << "  * " << entry.second << ": " << entry.first << std::endl;
     }
 
+    // Eliminar clases que no pasan el test
     auto it = mahalanobis_distances.begin();
     while (it != mahalanobis_distances.end()) {
         if (it->first > chi_square_05[5]) {
