@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
             std::cout << possible_classes.begin()->second << std::endl;
             break;
         default:
-            std::cout << "Dudas entre las clases ";
+            std::cout << "Duda entre las clases";
             for (auto& c : possible_classes) {
                 std::cout << " " << c.second;
             }

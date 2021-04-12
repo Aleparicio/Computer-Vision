@@ -99,7 +99,8 @@ int main(int argc, char* argv[]) {
 
     // Entrenar modelo
     MahalanobisClassifier mc;
-    mc.train(X, Y, A_PRIORI_ESTIMATION, 10);
+    // mc.train(X, Y, CLASSIC);
+    mc.train(X, Y, A_PRIORI_ESTIMATION, 5);
 
     write_samples(samples_file, X, Y, files);
     mc.save_model(model_file);
