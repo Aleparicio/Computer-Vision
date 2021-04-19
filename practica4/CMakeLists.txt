@@ -7,5 +7,5 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(detectors)
 
-add_executable(Keypoints Keypoints.cpp)
+add_executable(Keypoints Keypoints.cpp Ransac.cpp)
 target_link_libraries( Keypoints detectors_lib ${OpenCV_LIBS})
