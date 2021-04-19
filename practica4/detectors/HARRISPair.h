@@ -15,8 +15,8 @@ class HARRISPair : public Pair {
         img2 = _img2;
     }
 
-    HARRISPair(Mat& _img1, Mat& _img2, float _th, int _nf, int _nO, int _nL)
-        : initTh(_th), nFeat(_nf), nOct(_nO), nOctLayers(_nL) {
+    HARRISPair(Mat& _img1, Mat& _img2, int _blockSize, int _apertureSize, double _k, double _threshold)
+        : blockSize(_blockSize), apertureSize(_apertureSize), k(_k), threshold(_threshold) {
         img1 = _img1;
         img2 = _img2;
     }
@@ -34,14 +34,14 @@ class HARRISPair : public Pair {
     // ==========================================
     // Atributos de configuración
     // ==========================================
-    // Init threshold
-    float initTh = 0.005f;
-    // Número de features
-    int nFeat = 1000;
-    // Número de octavas
-    int nOct = 3;
-    // Layers por octava
-    int nOctLayers = 4;
+    // Tamaño de la vecindad (neighborhood) considerada alrededor del píxel
+    int blockSize = 2;
+    // Parámetro de apertura para el operador de Sobel
+    int apertureSize = 3;
+    // Parámetro k libre del detector de Harris
+    double k = 0.04;
+    // Threshold para obtener un resultado óptimo
+    double threshold = 100; // [0 - 255]
 
     int getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) override;
 };

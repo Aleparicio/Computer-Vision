@@ -55,13 +55,15 @@ int main(int argc, char** argv) {
     if (img1.empty() || img2.empty())
         return -1;
 
-    // std::shared_ptr<Pair> pair = std::make_shared<HARRISPair>(img1, img2);
-    std::shared_ptr<Pair> pair = std::make_shared<ORBPair>(img1, img2);
+    std::shared_ptr<Pair> pair = std::make_shared<HARRISPair>(img1, img2);
+    // std::shared_ptr<Pair> pair = std::make_shared<ORBPair>(img1, img2);
     // std::shared_ptr<Pair> pair = std::make_shared<SIFTPair>(img1, img2);
     // std::shared_ptr<Pair> pair = std::make_shared<SURFPair>(img1, img2);
     // std::shared_ptr<Pair> pair = std::make_shared<AKAZEPair>(img1, img2);
 
     pair->getMatchesApplyNNRatio(0.8);
+
+    std::cout << "Núm matches: " << pair->matched1.size() << std::endl;
 
     std::vector<cv::DMatch> matches(pair->matched1.size());
     for (int i = 0; i < pair->matched1.size(); ++i)
@@ -72,7 +74,7 @@ int main(int argc, char** argv) {
 
     cv::Mat matches_resul, homography_resul;
     cv::drawMatches(img1, pair->matched1, img2, pair->matched2, matches, matches_resul);
-    // drawHomographyBox(img2, homography_resul, homography);
+    // // drawHomographyBox(img2, homography_resul, homography);
     drawHomographyOverlay(img1, img2, homography_resul, homography);
     cv::imshow("Keypoints", matches_resul);
     cv::imshow("Homografia", homography_resul);
