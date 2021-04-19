@@ -1,6 +1,7 @@
 #include "opencv2/opencv.hpp"
 #include "SIFTPair.h"
 #include "AKAZEPair.h"
+#include "Ransac.h"
 
 
 enum kptType { ORBKPT, SIFTKPT, AKAZEKPT, SURFKPT };
@@ -14,7 +15,33 @@ Pair* selectPair(cv::Mat img1, cv::Mat img2, kptType tipo) {
     return pair;
 }
 
+void draw_homography(cv::Mat img, cv::Mat homography){
+    
+    cv::Mat esquinas = cv::Mat::ones(3, 4, CV_64F);
+    esquinas.at<double>(0, 0) = 0.0;
+    esquinas.at<double>(1, 0) = 0.0;
+    esquinas.at<double>(0, 1) = img.cols;
+    esquinas.at<double>(1, 1) = 0.0;
+    esquinas.at<double>(0, 2) = 0.0;
+    esquinas.at<double>(1, 2) = img.rows;
+    esquinas.at<double>(0, 3) = img.cols;
+    esquinas.at<double>(1, 3) = img.rows;
 
+    cv::Mat resul = homography * esquinas;
+    vector<Point> pt(4);
+    for(int i = 0; i < 4; ++i){
+        pt[i].x = resul.at<double>(0,i) / resul.at<double>(2,i);
+        pt[i].y = resul.at<double>(1,i) / resul.at<double>(2,i);
+    }
+    cv::Mat img3 = img.clone();
+    cv::line(img3, pt[0], pt[1], Scalar(255,255,255));
+    cv::line(img3, pt[0], pt[2], Scalar(255,255,255));
+    cv::line(img3, pt[3], pt[1], Scalar(255,255,255));
+    cv::line(img3, pt[3], pt[2], Scalar(255,255,255));
+    cv::imshow("Homography drawing", img3);
+    cv::waitKey(0);
+
+}
 
 
 
@@ -54,9 +81,12 @@ int main(int argc, char **argv)
     for(int i = 0; i < pair->matched1.size(); ++i)
         matches[i] = DMatch(i, i, 0);
 
+    Ransac robust_solver(pair->matched1, pair->matched2);
+    cv::Mat homography = robust_solver.execute();
+    draw_homography(img2, homography);
+
     cv::Mat resultado;
     cv::drawMatches(img1, pair->matched1, img2, pair->matched2, matches, resultado);
-
     cv::imshow("Keypoints", resultado);
     cv::waitKey(0);
 }

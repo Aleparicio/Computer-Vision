@@ -3,11 +3,12 @@ project( DisplayImage )
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
 
 set(SRCS_MODULES
    AKAZEPair.cpp
    SIFTPair.cpp
+   Ransac.cpp
 )
 
 add_library(SOURCES_CODE SHARED ${SRCS_MODULES})
