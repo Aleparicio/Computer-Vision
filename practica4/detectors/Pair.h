@@ -8,31 +8,29 @@ using namespace std;
 using namespace cv;
 
 class Pair {
-public:
-
+  public:
     // Extrae en NNMatches los keypoints resultantes de pasar el test del vecino más próximo con
     // ratio de nn_match_ratio
     virtual void getMatchesApplyNNRatio(const float nn_match_ratio = 0.8f) = 0;
-        
-protected:
 
+  protected:
     // Aplica el nearest neighbour ratio para los matches de nn_matches.
     // Los matches que superan el test se almacenan en matched1 y matched2
-    virtual void applyNNRatio(std::vector<std::vector<cv::DMatch>>& nn_matches, float nn_match_ratio) = 0;
+    void applyNNRatio(std::vector<std::vector<cv::DMatch>>& nn_matches, float nn_match_ratio);
 
     // Devuelve el número de keypoints encontrados, que será mayor o igual que nFeatures
     // a menos que no se encuentren suficientes keypoints con un umbral mayor que 1e-10
     virtual int getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) = 0;
 
     // ==========================================
-    // Atributos base 
+    // Atributos base
     // ==========================================
     // Descriptores
     cv::Mat desc1, desc2;
     // Imágenes
     cv::Mat img1, img2;
 
-public:
+  public:
     // ==========================================
     // Atributos del matching
     // ==========================================
@@ -46,5 +44,4 @@ public:
     std::vector<cv::KeyPoint> kpts1, kpts2;
 };
 
-
-#endif 
+#endif
