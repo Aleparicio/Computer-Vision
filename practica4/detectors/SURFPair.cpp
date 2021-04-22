@@ -1,4 +1,4 @@
-#include "SURFPair.h"
+/*#include "SURFPair.h"
 
 int SURFPair::getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) {
 
@@ -25,3 +25,4 @@ void SURFPair::getMatchesApplyNNRatio(const float nn_match_ratio) {
     // Conservar emparejamiento si es mejor que el segundo más parecido
     applyNNRatio(nn_matches, nn_match_ratio);
 }
+*/

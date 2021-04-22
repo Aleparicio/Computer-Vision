@@ -4,9 +4,14 @@ int AKAZEPair::getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) {
 
     kpts.clear();
     Ptr<AKAZE> akaze = AKAZE::create(AKAZE::DESCRIPTOR_MLDB, 0, 3, initTh, nOct, nOctLayers);
+    
+    
     akaze->detectAndCompute(img, noArray(), kpts, desc);
-
-    std::cout << kpts.size() << std::endl;
+    while(kpts.size() < nFeat && akaze->getThreshold() > 1e-8){
+        kpts.clear();
+        akaze->setThreshold(akaze->getThreshold() / 1.5f);
+        akaze->detectAndCompute(img, noArray(), kpts, desc);
+    }
     return (int)kpts.size();
 }
 

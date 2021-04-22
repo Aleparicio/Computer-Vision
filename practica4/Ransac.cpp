@@ -71,6 +71,10 @@ cv::Mat Ransac::execute(){
 
 
         int score = std::count(inliers.begin(), inliers.end(), true);
+        int possible_attempts = get_attempts((float) score / (float) inliers.size());
+        if(possible_attempts < t)
+            std::cout << "Adaptativo, reducido el número de intentos de " << t << " a " << possible_attempts << std::endl;
+        t = std::min(t, possible_attempts);
 
         if(score > best_score){
             best_score = score;
