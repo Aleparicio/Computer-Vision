@@ -1,4 +1,4 @@
-/*#ifndef SURFFEATURES_H
+#ifndef SURFFEATURES_H
 #define SURFFEATURES_H
 
 #include "Pair.h"
@@ -47,4 +47,3 @@ class SURFPair : public Pair {
 };
 
 #endif
-*/
