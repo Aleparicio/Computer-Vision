@@ -3,11 +3,12 @@
 #include "HARRISPair.h"
 #include "ORBPair.h"
 #include "SIFTPair.h"
-// #include "SURFPair.h"
 #include "AKAZEPair.h"
 #include "Ransac.h"
 
-#include <bits/stdc++.h>
+#ifdef HAVE_XFEATURES2D_NONFREE_H
+#include "SURFPair.h"
+#endif
 
 // https://answers.opencv.org/question/65222/is-there-a-way-to-keep-imwrite-from-overwriting-files/
 const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
@@ -37,7 +38,6 @@ const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
     else
         throw 0;
 }
-
 
 void drawHomographyBox(const cv::Mat& img, cv::Mat& dst, const cv::Mat& homography) {
     cv::Mat esquinas = cv::Mat::ones(3, 4, CV_64F);
@@ -75,8 +75,8 @@ void drawHomographyOverlay(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& ds
     dst = img2 * alpha + dst * (1 - alpha);
 }
 
-std::vector<cv::Point2f> get_esquinas(const cv::Mat& img){
-    
+std::vector<cv::Point2f> get_esquinas(const cv::Mat& img) {
+
     int cols = img.cols;
     int rows = img.rows;
     std::vector<cv::Point2f> pt(4);
@@ -87,7 +87,7 @@ std::vector<cv::Point2f> get_esquinas(const cv::Mat& img){
     return pt;
 }
 
-cv::Mat get_identity(){
+cv::Mat get_identity() {
     cv::Mat ident = cv::Mat::zeros(3, 3, CV_64F);
     ident.at<double>(0, 0) = 1;
     ident.at<double>(1, 1) = 1;
@@ -96,7 +96,7 @@ cv::Mat get_identity(){
 }
 
 // Seguido tutorial https://stackoverflow.com/questions/13063201/how-to-show-the-whole-image-when-using-opencv-warpperspective
-cv::Mat warpImages(cv::Mat& img1, cv::Mat& img2, cv::Mat& homography){
+cv::Mat warpImages(cv::Mat& img1, cv::Mat& img2, cv::Mat& homography) {
 
     std::vector<cv::Point2f> pt_im1 = get_esquinas(img2);
     std::vector<cv::Point2f> pt_im2_dest, pt_im2 = get_esquinas(img1);
@@ -105,29 +105,28 @@ cv::Mat warpImages(cv::Mat& img1, cv::Mat& img2, cv::Mat& homography){
 
     int xmin = INT_MAX, xmax = INT_MIN;
     int ymin = INT_MAX, ymax = INT_MIN;
-    for(int i = 0; i < pt_im1.size(); ++i){
-        if(pt_im1[i].x < xmin)
+    for (int i = 0; i < pt_im1.size(); ++i) {
+        if (pt_im1[i].x < xmin)
             xmin = pt_im1[i].x;
-        if(pt_im1[i].x > xmax)
+        if (pt_im1[i].x > xmax)
             xmax = pt_im1[i].x;
-        if(pt_im1[i].y < ymin)
+        if (pt_im1[i].y < ymin)
             ymin = pt_im1[i].y;
-        if(pt_im1[i].y > ymax)
+        if (pt_im1[i].y > ymax)
             ymax = pt_im1[i].y;
     }
 
     cv::Mat translation = get_identity();
     translation.at<double>(0, 2) = -xmin;
     translation.at<double>(1, 2) = -ymin;
-    cv::Mat result, modification = translation*homography;
-    cv::warpPerspective(img1, result, modification, cv::Size(xmax-xmin, ymax-ymin));
+    cv::Mat result, modification = translation * homography;
+    cv::warpPerspective(img1, result, modification, cv::Size(xmax - xmin, ymax - ymin));
     img2.copyTo(result.rowRange(-ymin, -ymin + img2.rows).colRange(-xmin, -xmin + img2.cols));
     return result;
 }
 
+void do_panorama(cv::Mat& img1, cv::Mat& img2, cv::Mat& img_panorama) {
 
-void do_panorama(cv::Mat& img1, cv::Mat& img2, cv::Mat& img_panorama){
-    
     std::shared_ptr<Pair> pair = std::make_shared<AKAZEPair>(img1, img2);
     pair->getMatchesApplyNNRatio(0.8);
     // std::cout << "Núm matches: " << pair->matched1.size() << std::endl;
@@ -135,7 +134,7 @@ void do_panorama(cv::Mat& img1, cv::Mat& img2, cv::Mat& img_panorama){
 
     Ransac robust_solver(pair->matched1, pair->matched2);
     cv::Mat resultado, homography = robust_solver.execute();
-    
+
     // cv::drawMatches(img1, pair->matched1, img2, pair->matched2, matches, resultado);
     // cv::imshow("Resultado", resultado);
     // cv::waitKey(0);
@@ -170,11 +169,7 @@ int main(int argc, char** argv) {
     do_panorama(panorama, img5, panorama);
     cv::imshow("Homografia", panorama);
     cv::waitKey(0);
-
-
 }
-
-
 
 /*
 int main(int argc, char* argv[]) {
