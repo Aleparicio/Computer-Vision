@@ -12,4 +12,6 @@ if (HAVE_XFEATURES2D_NONFREE_H)
 endif()
 
 add_executable(Keypoints Keypoints.cpp Ransac.cpp)
+add_executable(Chessboard Chessboard.cpp Ransac.cpp)
 target_link_libraries( Keypoints detectors_lib ${OpenCV_LIBS})
+target_link_libraries( Chessboard detectors_lib ${OpenCV_LIBS})
