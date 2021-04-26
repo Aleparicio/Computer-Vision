@@ -75,7 +75,7 @@ void drawHomographyOverlay(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& ds
     dst = img2 * alpha + dst * (1 - alpha);
 }
 
-std::vector<cv::Point2f> get_corners(const cv::Mat& img) {
+std::vector<cv::Point2f> getCorners(const cv::Mat& img) {
 
     int cols = img.cols;
     int rows = img.rows;
@@ -99,8 +99,8 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
 
     // Transformar img1 según homography y colocarle encima img2
 
-    std::vector<cv::Point2f> corners_img1 = get_corners(img1);
-    std::vector<cv::Point2f> corners_img2 = get_corners(img2);
+    std::vector<cv::Point2f> corners_img1 = getCorners(img1);
+    std::vector<cv::Point2f> corners_img2 = getCorners(img2);
 
     std::vector<cv::Point2f> corners_img1_warped;
     cv::perspectiveTransform(corners_img1, corners_img1_warped, homography);
@@ -179,7 +179,7 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
     return result;
 }
 
-void do_panorama(cv::Mat& img1, cv::Mat& img2, cv::Mat& img_panorama, BlendType blend_type = BlendType::NONE) {
+void doPanorama(cv::Mat& img1, cv::Mat& img2, cv::Mat& img_panorama, BlendType blend_type = BlendType::NONE) {
     cv::Mat img1_gray, img2_gray;
 
     cv::cvtColor(img1, img1_gray, cv::COLOR_BGR2GRAY);
@@ -245,19 +245,19 @@ int main(int argc, char** argv) {
     // exit(1);
 
     cv::Mat panorama;
-    do_panorama(img3, img4, panorama);
+    doPanorama(img3, img4, panorama);
     cv::imshow("Homografia", panorama);
     cv::waitKey(0);
 
-    do_panorama(panorama, img2, panorama);
+    doPanorama(panorama, img2, panorama);
     cv::imshow("Homografia", panorama);
     cv::waitKey(0);
 
-    do_panorama(panorama, img1, panorama);
+    doPanorama(panorama, img1, panorama);
     cv::imshow("Homografia", panorama);
     cv::waitKey(0);
 
-    do_panorama(panorama, img5, panorama);
+    doPanorama(panorama, img5, panorama);
     cv::imshow("Homografia", panorama);
     cv::waitKey(0);
 }
@@ -286,7 +286,7 @@ int main(int argc, char* argv[]) {
             break;
 
         if(i % 75 == 0){
-            do_panorama(frame, panorama, new_panorama);
+            doPanorama(frame, panorama, new_panorama);
             panorama = new_panorama.clone();
         }
 
