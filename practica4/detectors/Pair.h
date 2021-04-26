@@ -13,11 +13,11 @@ class Pair {
     // ratio de nn_match_ratio
     virtual void getMatchesApplyNNRatio(const float nn_match_ratio = 0.8f) = 0;
 
-    std::vector<cv::DMatch> getMatchArray(){
-      std::vector<cv::DMatch> matches(matched1.size());
-      for (int i = 0; i < matched1.size(); ++i)
-        matches[i] = DMatch(i, i, 0);
-      return matches;
+    std::vector<cv::DMatch> getMatchArray() {
+        std::vector<cv::DMatch> matches(matched1.size());
+        for (int i = 0; i < matched1.size(); ++i)
+            matches[i] = DMatch(i, i, 0);
+        return matches;
     }
 
   protected:
