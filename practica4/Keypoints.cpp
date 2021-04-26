@@ -142,6 +142,7 @@ void do_panorama(cv::Mat& img1, cv::Mat& img2, cv::Mat& img_panorama) {
     img_panorama = warpImages(img1, img2, homography);
 }
 
+
 int main(int argc, char** argv) {
 
     cv::Mat img1 = cv::imread("../../images/BuildingScene/building1.JPG", cv::IMREAD_GRAYSCALE);
@@ -170,6 +171,7 @@ int main(int argc, char** argv) {
     cv::imshow("Homografia", panorama);
     cv::waitKey(0);
 }
+
 
 /*
 int main(int argc, char* argv[]) {
@@ -207,5 +209,25 @@ int main(int argc, char* argv[]) {
     cv::imshow("Frame", panorama);
     cv::waitKey(0);
     cap.release();
+    return 0;
+}*/
+
+
+
+/*
+int main(int argc, char* argv[]) {
+
+    cv::Mat img1 = cv::imread("../../images/BuildingScene/building1.JPG", cv::IMREAD_GRAYSCALE);
+    cv::Mat img2 = cv::imread("../../images/BuildingScene/building2.JPG", cv::IMREAD_GRAYSCALE);
+
+    std::shared_ptr<Pair> pair = std::make_shared<SIFTPair>(img1, img2);
+    pair->flannMatchesNNRatio(0.8);
+    std::vector<cv::DMatch> matches = pair->getMatchArray();
+
+    cv::Mat resultado;
+    cv::drawMatches(img1, pair->matched1, img2, pair->matched2, matches, resultado);
+    cv::imshow("Resultado", resultado);
+    cv::waitKey(0);
+
     return 0;
 }*/

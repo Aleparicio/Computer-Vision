@@ -16,3 +16,22 @@ void Pair::applyNNRatio(vector<vector<DMatch>>& nn_matches, float nn_match_ratio
         }
     }
 }
+
+
+// https://stackoverflow.com/questions/44184159/opencv-c-flann-indexparams-and-searchparams-error
+void Pair::flannMatchesNNRatio(const float nn_match_ratio){
+
+    getKeypoints(img1, desc1, kpts1);
+    getKeypoints(img2, desc2, kpts2);
+
+    if(desc1.type() != CV_32F)
+        desc1.convertTo(desc1, CV_32F);
+    if(desc2.type() != CV_32F)
+        desc2.convertTo(desc2, CV_32F);
+
+    std::vector<std::vector<cv::DMatch>> nn_matches;
+    cv::FlannBasedMatcher matcher;
+    matcher.knnMatch(desc1, desc2, nn_matches, 2);
+
+    applyNNRatio(nn_matches, nn_match_ratio);
+}
