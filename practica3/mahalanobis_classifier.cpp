@@ -138,7 +138,7 @@ std::set<std::pair<float, std::string>> MahalanobisClassifier::predict(const Des
     // Eliminar clases que no pasan el test
     auto it = mahalanobis_distances.begin();
     while (it != mahalanobis_distances.end()) {
-        if (it->first > chi_square_05[5]) {
+        if (it->first > chi_square_05[x.data.size()]) {
             it = mahalanobis_distances.erase(it);
         } else {
             it++;

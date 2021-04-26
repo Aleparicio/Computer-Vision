@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 
     read_samples(samples_file, X, Y, files);
 
-    // Lectura de la nueva muestra de entreamiento
+    // Lectura de la nueva muestra de entrenamiento
     cv::Mat frame;
     std::string image_path;
     try {

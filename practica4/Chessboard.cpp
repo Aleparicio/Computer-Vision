@@ -1,16 +1,16 @@
-
 #include <opencv2/opencv.hpp>
 
 #include "HARRISPair.h"
 #include "ORBPair.h"
 #include "SIFTPair.h"
-// #include "SURFPair.h"
 #include "AKAZEPair.h"
 #include "Ransac.h"
 
-#include <bits/stdc++.h>
+#ifdef HAVE_XFEATURES2D_NONFREE_H
+#include "SURFPair.h"
+#endif
 
-void fillImages(std::vector<cv::Mat>& imgs){
+void fillImages(std::vector<cv::Mat>& imgs) {
 
     imgs.clear();
 
@@ -43,11 +43,9 @@ void fillImages(std::vector<cv::Mat>& imgs){
     imgs.push_back(img14);
 }
 
-
 int main(int argc, char** argv) {
 
-
-    Size patternsize(9,6); //interior number of corners
+    Size patternsize(9, 6); //interior number of corners
     std::vector<cv::Mat> imagenes;
     fillImages(imagenes);
 
@@ -55,25 +53,25 @@ int main(int argc, char** argv) {
     std::vector<std::vector<cv::Point2f>> image_points;
 
     std::vector<cv::Point3f> calibrate_points;
-    for(int i = 0; i < 6; ++i){
-        for(int j = 0; j < 9; ++j){
-            calibrate_points.push_back(cv::Point3f(j,i,0));
+    for (int i = 0; i < 6; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            calibrate_points.push_back(cv::Point3f(j, i, 0));
         }
     }
 
-    for(int i = 0; i < imagenes.size(); ++i){
-    
+    for (int i = 0; i < imagenes.size(); ++i) {
+
         cv::Mat actual_img = imagenes[i];
         std::vector<cv::Point2f> corners;
 
         bool patternfound = findChessboardCorners(actual_img, patternsize, corners,
-            cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE
-            + cv::CALIB_CB_FAST_CHECK);
+                                                  cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE
+                                                      + cv::CALIB_CB_FAST_CHECK);
 
-        if(patternfound){
+        if (patternfound) {
             cv::cornerSubPix(actual_img, corners, patternsize, Size(-1, -1),
-                cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1));
-        
+                             cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1));
+
             object_points.push_back(calibrate_points);
             image_points.push_back(corners);
 
@@ -98,6 +96,3 @@ int main(int argc, char** argv) {
     //cv::imwrite("sa.jpg", img1);
     return 0;
 }
-
-
-
