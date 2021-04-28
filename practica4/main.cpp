@@ -85,8 +85,10 @@ static bool parseArgs(int argc, char** argv, Args& args) {
                 args.features = FeaturesType::ORB;
             } else if (features == "sift") {
                 args.features = FeaturesType::SIFT;
+#ifdef HAVE_XFEATURES2D_NONFREE_H
             } else if (features == "surf") {
                 args.features = FeaturesType::SURF;
+#endif
             } else if (features == "akaze") {
                 args.features = FeaturesType::AKAZE;
             } else {
