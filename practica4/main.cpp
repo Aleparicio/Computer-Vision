@@ -41,8 +41,10 @@ static void printUsage(char** argv) {
                  "    Usar FLANN para comparar los descriptores. Por defecto no se usa\n"
                  "  --nn_ratio\n"
                  "    Ratio al segundo vecino. Por defecto 0.8\n"
-                 "\nEjemplo: "
-              << argv[0] << " --mode images../../ images / BuildingScene / building{4, 3, 5, 2, 1}.JPG-- blend multiband\n";
+                 "\nEjemplos:\n"
+              << argv[0] << " --mode images ../../images/BuildingScene/building{4, 3, 5, 2, 1}.JPG --blend multiband\n"
+              << argv[0] << " --mode live_key --blend multiband --seam voronoi\n"
+              << argv[0] << " --mode live_auto 5 --features sift\n";
 }
 
 static bool parseArgs(int argc, char** argv, Args& args) {

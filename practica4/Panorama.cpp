@@ -282,9 +282,13 @@ void doPanorama(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& img_panorama,
     } else if (features_type == FeaturesType::SIFT) {
         std::cout << "sift" << std::endl;
         pair = std::make_shared<SIFTPair>(img1_gray, img2_gray);
+
+#ifdef HAVE_XFEATURES2D_NONFREE_H
     } else if (features_type == FeaturesType::SURF) {
         std::cout << "surf" << std::endl;
         pair = std::make_shared<SURFPair>(img1_gray, img2_gray);
+#endif
+
     } else if (features_type == FeaturesType::ORB) {
         std::cout << "orb" << std::endl;
         pair = std::make_shared<ORBPair>(img1_gray, img2_gray);
