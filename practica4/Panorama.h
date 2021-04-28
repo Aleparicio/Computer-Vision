@@ -13,6 +13,27 @@
 #include "SURFPair.h"
 #endif
 
+enum class BlendType {
+    LINEAR,
+    FEATHER,
+    MULTI_BAND,
+    NO
+};
+
+enum class SeamType {
+    VORONOI,
+    DP_COLOR,
+    NO
+};
+
+enum class FeaturesType {
+    HARRIS,
+    ORB,
+    SIFT,
+    SURF,
+    AKAZE
+};
+
 const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img,
                               const std::vector<int>& params = std::vector<int>());
 
@@ -20,15 +41,8 @@ void drawHomographyBox(const cv::Mat& img, cv::Mat& dst, const cv::Mat& homograp
 
 void drawHomographyOverlay(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& dst, const cv::Mat& homography, float alpha = 0.5);
 
-enum BlendType {
-    NONE,
-    LINEAR,
-    FEATHER,
-    MULTI_BAND
-};
+cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homography, BlendType blend_type = BlendType::NO, SeamType seam_type = SeamType::NO);
 
-cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homography, BlendType blend_type = BlendType::NONE);
-
-void doPanorama(cv::Mat& img1, cv::Mat& img2, cv::Mat& img_panorama, BlendType blend_type = BlendType::NONE);
+void doPanorama(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& img_panorama, FeaturesType features_type, float nn_ratio, bool use_flann, BlendType blend_type, SeamType seam_type);
 
 #endif
