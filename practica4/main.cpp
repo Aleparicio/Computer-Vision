@@ -42,7 +42,7 @@ static void printUsage(char** argv) {
                  "  --nn_ratio\n"
                  "    Ratio al segundo vecino. Por defecto 0.8\n"
                  "\nEjemplos:\n"
-              << argv[0] << " --mode images ../../images/BuildingScene/building{4, 3, 5, 2, 1}.JPG --blend multiband\n"
+              << argv[0] << " --mode images ../../images/BuildingScene/building{4,3,5,2,1}.JPG --blend multiband\n"
               << argv[0] << " --mode live_key --blend multiband --seam voronoi\n"
               << argv[0] << " --mode live_auto 5 --features sift\n";
 }
@@ -167,9 +167,7 @@ int main(int argc, char** argv) {
             doPanorama(orig_images[i], panorama, panorama, args.features, args.nn_ratio, args.use_flann, args.blend, args.seam);
             // doPanorama(panorama, orig_images[i], panorama, args.features, args.nn_ratio, args.use_flann, args.blend, args.seam);
             cv::imshow("Panorama", panorama);
-            int k = cv::waitKey(0);
-            std::cout << k << std::endl;
-            exit(1);
+            cv::waitKey(0);
         }
 
     } else {
