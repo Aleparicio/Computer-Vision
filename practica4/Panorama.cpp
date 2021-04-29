@@ -304,13 +304,23 @@ void doPanorama(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& img_panorama,
     }
     std::cout << "Núm matches: " << pair->matched1.size() << std::endl;
 
+    // Mostrar keypoints y matches
+    cv::Mat img_kpts;
+    cv::drawKeypoints(img1, pair->kpts1, img_kpts);
+    cv::imshow("Keypoints 1", img_kpts);
+    cv::drawKeypoints(img2, pair->kpts2, img_kpts);
+    cv::imshow("Keypoints 2", img_kpts);
+
+    cv::Mat img_matches;
+    std::vector<cv::DMatch> matches = pair->getMatchArray();
+    cv::drawMatches(img1, pair->matched1, img2, pair->matched2, matches, img_matches);
+    cv::imshow("Resultado", img_matches);
+
+    // cv::waitKey(0);
+
     // Hand-made RANSAC
     Ransac robust_solver(pair->matched1, pair->matched2);
     cv::Mat homography = robust_solver.execute();
-    cv::Mat resultado;
-    std::vector<cv::DMatch> matches = pair->getMatchArray();
-    cv::drawMatches(img1, pair->matched1, img2, pair->matched2, matches, resultado);
-    cv::imshow("Resultado", resultado);
 
     // // Built-in RANSAC
     // std::vector<cv::Point2f> puntos_1, puntos_2;

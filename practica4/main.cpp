@@ -181,9 +181,20 @@ int main(int argc, char** argv) {
         std::cout << "Se tomarán imágenes en vivo." << std::endl;
 
         cv::Mat frame, panorama, new_panorama;
-        cap >> panorama;
+        cap >> frame;
+
+        cv::imshow("Frame", frame);
+        // cv::waitKey(0);
+
+        std::cout << frame.size() << std::endl;
+
+        frame = frame(Rect(300, 0, frame.cols - 600, frame.rows - 90));
+
+        panorama = frame;
+        // panorama = frame(Rect(0, 0, frame.cols, frame.rows - 90));
 
         cv::imshow("Panorama", panorama);
+        // cv::waitKey(0);
 
         while (true) {
 
@@ -202,6 +213,8 @@ int main(int argc, char** argv) {
             cap >> frame;
             if (frame.empty()) // end of video stream
                 break;
+
+            frame = frame(Rect(300, 0, frame.cols - 600, frame.rows - 90));
 
             // Crear panorama
             doPanorama(frame, panorama, new_panorama, args.features, args.nn_ratio, args.use_flann, args.blend, args.seam);

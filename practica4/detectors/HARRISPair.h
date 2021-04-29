@@ -15,8 +15,8 @@ class HARRISPair : public Pair {
         img2 = _img2;
     }
 
-    HARRISPair(Mat& _img1, Mat& _img2, int _blockSize, int _apertureSize, double _k, double _threshold)
-        : blockSize(_blockSize), apertureSize(_apertureSize), k(_k), threshold(_threshold) {
+    HARRISPair(Mat& _img1, Mat& _img2, int _blockSize, int _apertureSize, double _k, double _threshold_ratio)
+        : blockSize(_blockSize), apertureSize(_apertureSize), k(_k), threshold_ratio(_threshold_ratio) {
         img1 = _img1;
         img2 = _img2;
     }
@@ -36,12 +36,13 @@ class HARRISPair : public Pair {
     // ==========================================
     // Tamaño de la vecindad (neighborhood) considerada alrededor del píxel
     int blockSize = 2;
+    // int blockSize = 10;
     // Parámetro de apertura para el operador de Sobel
-    int apertureSize = 3;
+    int apertureSize = 7;
     // Parámetro k libre del detector de Harris
     double k = 0.04;
-    // Threshold para obtener un resultado óptimo
-    double threshold = 100; // [0 - 255]
+    // Ratio para encontrar las esquinas
+    double threshold_ratio = 0.01; // [0 - 1]
 
     int getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) override;
 };
