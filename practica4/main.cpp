@@ -144,6 +144,15 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    /*cv::Mat intrinsic, distCoeffs;
+    calibrate_camera(intrinsic, distCoeffs);
+    cv::Mat undistorted_img1, img1 = cv::imread("../../images/chessboard/left01.jpg", cv::IMREAD_GRAYSCALE);
+    undistort_image(img1, undistorted_img1, intrinsic, distCoeffs);
+
+    cv::imshow("dsa", undistorted_img1);
+    cv::waitKey();*/
+
+
     if (args.mode == Mode::IMAGES) {
         // Abrir imágenes
         std::vector<cv::Mat> orig_images;

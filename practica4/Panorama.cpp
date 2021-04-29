@@ -28,6 +28,87 @@ const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img, co
         throw 0;
 }
 
+
+// Llena el vector imgs con imágenes cargadas de memoria para calibrar la cámara
+void fillImages(std::vector<cv::Mat>& imgs) {
+
+    imgs.clear();
+
+    cv::Mat img1 = cv::imread("../../images/chessboard/left01.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img2 = cv::imread("../../images/chessboard/left02.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img3 = cv::imread("../../images/chessboard/left03.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img4 = cv::imread("../../images/chessboard/left04.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img5 = cv::imread("../../images/chessboard/left05.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img6 = cv::imread("../../images/chessboard/left06.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img7 = cv::imread("../../images/chessboard/left07.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img8 = cv::imread("../../images/chessboard/left08.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img9 = cv::imread("../../images/chessboard/left09.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img11 = cv::imread("../../images/chessboard/left11.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img12 = cv::imread("../../images/chessboard/left12.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img13 = cv::imread("../../images/chessboard/left13.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat img14 = cv::imread("../../images/chessboard/left14.jpg", cv::IMREAD_GRAYSCALE);
+
+    imgs.push_back(img1);
+    imgs.push_back(img2);
+    imgs.push_back(img3);
+    imgs.push_back(img4);
+    imgs.push_back(img5);
+    imgs.push_back(img6);
+    imgs.push_back(img7);
+    imgs.push_back(img8);
+    imgs.push_back(img9);
+    imgs.push_back(img11);
+    imgs.push_back(img12);
+    imgs.push_back(img13);
+    imgs.push_back(img14);
+}
+
+
+// Devuelve los parámteros intrínsecos de la cámara y los coeficientes
+// de distorsión de la misma. Parámetros DE SALIDA 
+void calibrate_camera(cv::Mat& intrinsic, cv::Mat& distCoeffs){
+
+    Size patternsize(9, 6); // Número de esquinas internas del tablero de ajedrez
+    std::vector<cv::Mat> imagenes;
+    fillImages(imagenes);
+
+    std::vector<std::vector<cv::Point3f>> object_points;
+    std::vector<std::vector<cv::Point2f>> image_points;
+
+    std::vector<cv::Point3f> calibrate_points;
+    for (int i = 0; i < 6; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            calibrate_points.push_back(cv::Point3f(j, i, 0));
+        }
+    }
+
+    for (int i = 0; i < imagenes.size(); ++i) {
+
+        cv::Mat actual_img = imagenes[i];
+        std::vector<cv::Point2f> corners;
+
+        bool patternfound = findChessboardCorners(actual_img, patternsize, corners,
+                                                  cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE
+                                                      + cv::CALIB_CB_FAST_CHECK);
+
+        if (patternfound) {
+            cv::cornerSubPix(actual_img, corners, patternsize, Size(-1, -1),
+                             cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1));
+
+            object_points.push_back(calibrate_points);
+            image_points.push_back(corners);
+        }
+    }
+
+    intrinsic = Mat(3, 3, CV_32FC1);
+    vector<Mat> rvecs, tvecs;
+    double rms = cv::calibrateCamera(object_points, image_points, imagenes[0].size(), intrinsic, distCoeffs, rvecs, tvecs);
+}
+
+void undistort_image(cv::Mat& img1, cv::Mat& undistorted_img1, cv::Mat& intrinsic, cv::Mat& distCoeffs){
+    undistort(img1, undistorted_img1, intrinsic, distCoeffs);
+}
+
 void drawHomographyBox(const cv::Mat& img, cv::Mat& dst, const cv::Mat& homography) {
     cv::Mat esquinas = cv::Mat::ones(3, 4, CV_64F);
     esquinas.at<double>(0, 0) = 0.0;
