@@ -45,4 +45,8 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
 
 void doPanorama(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& img_panorama, FeaturesType features_type, float nn_ratio, bool use_flann, BlendType blend_type, SeamType seam_type);
 
+void undistort_image(cv::Mat& img1, cv::Mat& undistorted_img1, cv::Mat& intrinsic, cv::Mat& distCoeffs);
+
+void calibrate_camera(cv::Mat& intrinsic, cv::Mat& distCoeffs);
+
 #endif
