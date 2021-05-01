@@ -24,7 +24,7 @@ int HARRISPair::getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) {
     for (int i = 0; i < img.rows; i++) {
         for (int j = 0; j < img.cols; j++) {
             // El threshold para encontrar las esquinas depende de cada imagen
-            if ((int)dst.at<float>(i, j) > 0.01 * maxVal) {
+            if ((int)dst.at<float>(i, j) > threshold_ratio * maxVal) {
                 // double response = 1;
                 KeyPoint kp(j, i, blockSize);
                 kpts.push_back(kp);

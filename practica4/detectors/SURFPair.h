@@ -43,6 +43,8 @@ class SURFPair : public Pair {
     // Layers por octava
     int nOctaveLayers = 3;
 
+    // (double hessianThreshold=100, int nOctaves=4, int nOctaveLayers=3, bool extended=false, bool upright=false)
+
     int getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) override;
 };
 

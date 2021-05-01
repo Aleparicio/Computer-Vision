@@ -126,7 +126,7 @@ static bool parseArgs(int argc, char** argv, Args& args) {
         } else if (arg == "--use_flann") {
             args.use_flann = true;
         } else if (arg == "--nn_ratio") {
-            args.nn_ratio = std::stoi(std::string(argv[i + 1]));
+            args.nn_ratio = std::stof(std::string(argv[i + 1]));
             i++;
         } else if (arg.substr(0, 2) != "--") {
             args.images_files.push_back(arg);

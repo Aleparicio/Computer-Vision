@@ -43,6 +43,8 @@ class ORBPair : public Pair {
     // Edge threshold
     double edgeThreshold = 31;
 
+    // (int 	nfeatures = 500, float 	scaleFactor = 1.2f, int 	nlevels = 8, int 	edgeThreshold = 31)
+
     int getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) override;
 };
 

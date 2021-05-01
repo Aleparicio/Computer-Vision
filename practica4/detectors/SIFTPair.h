@@ -36,11 +36,13 @@ class SIFTPair : public Pair {
     // Number of layers per octave
     int nOctaveLayers = 3;
     // Contrast threshold
-    double contrastThreshold = 0.09;
+    double contrastThreshold = 0.04;
     // Edge threshold
     double edgeThreshold = 10;
     // Sigma
     double sigma = 1.6;
+
+    // (int nfeatures=0, int nOctaveLayers=3, double contrastThreshold=0.04, double edgeThreshold=10, double sigma=1.6)
 
     int getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) override;
 };
