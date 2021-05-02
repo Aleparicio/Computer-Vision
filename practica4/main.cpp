@@ -42,7 +42,7 @@ static void printUsage(char** argv) {
                  "  --nn_ratio\n"
                  "    Ratio al segundo vecino. Por defecto 0.8\n"
                  "\nEjemplos:\n"
-              << argv[0] << " --mode images ../../images/BuildingScene/building{4,3,5,2,1}.JPG --blend multiband\n"
+              << argv[0] << " --mode images BuildingScene/building{4,3,5,2,1}.JPG --blend multiband\n"
               << argv[0] << " --mode live_key --blend multiband --seam voronoi\n"
               << argv[0] << " --mode live_auto 5 --features sift\n";
 }
@@ -141,8 +141,6 @@ static bool parseArgs(int argc, char** argv, Args& args) {
 int main(int argc, char** argv) {
     std::string output_name = "panorama.jpg";
 
-    // int screen_width = 4096, screen_height = 2160;
-    // int screen_width = 1920, screen_height = 1080;
     int screen_width = 1920, screen_height = 1050;
 
     cv::namedWindow("Matches", cv::WINDOW_NORMAL);
@@ -152,8 +150,6 @@ int main(int argc, char** argv) {
     cv::namedWindow("Panorama", cv::WINDOW_NORMAL);
     cv::resizeWindow("Panorama", cv::Size(screen_width, screen_height / 2));
     cv::moveWindow("Panorama", 0, 0);
-
-    // cv::waitKey(0);
 
     Args args;
     if (!parseArgs(argc, argv, args)) {
@@ -188,7 +184,14 @@ int main(int argc, char** argv) {
         // Realizar panorama
         cv::Mat panorama = orig_images[0];
         for (int i = 1; i < orig_images.size(); i++) {
+
+            float start = cv::getTickCount();
             doPanorama(orig_images[i], panorama, panorama, args.features, args.nn_ratio, args.use_flann, args.blend, args.seam);
+            float end = cv::getTickCount();
+
+            std::cout << "Tiempo para añadir la imagen " << args.images_files[i]
+                      << ": " << (end - start) / cv::getTickFrequency() << "s" << std::endl;
+
             cv::imshow("Panorama", panorama);
 
             cv::resizeWindow("Panorama", cv::Size(screen_width, screen_height / 2));
@@ -220,12 +223,7 @@ int main(int argc, char** argv) {
         cv::Mat frame, panorama, new_panorama;
         cap >> frame;
 
-        frame = frame(Rect(300, 0, frame.cols - 600, frame.rows - 90));
-
-        // cv::resize(frame, frame, cv::Size(), 0.5, 0.5);
-        std::cout << frame.rows << " " << frame.cols << std::endl;
         panorama = frame;
-
         cv::imshow("Panorama", panorama);
 
         while (true) {
@@ -254,12 +252,15 @@ int main(int argc, char** argv) {
             cap >> frame;
             if (frame.empty()) // end of video stream
                 break;
-            // cv::resize(frame, frame, cv::Size(), 0.5, 0.5);
-
-            frame = frame(Rect(300, 0, frame.cols - 600, frame.rows - 90));
 
             // Crear panorama
+            float start = cv::getTickCount();
             doPanorama(frame, panorama, new_panorama, args.features, args.nn_ratio, args.use_flann, args.blend, args.seam);
+            float end = cv::getTickCount();
+
+            std::cout << "Tiempo para añadir la nueva imagen: "
+                      << (end - start) / cv::getTickFrequency() << "s" << std::endl;
+
             panorama = new_panorama.clone();
 
             cv::imshow("Panorama", panorama);
