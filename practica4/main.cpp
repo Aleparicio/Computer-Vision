@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
         cv::Mat frame, panorama, new_panorama;
         cap >> frame;
 
-        panorama = frame;
+        panorama = frame.clone();
         cv::imshow("Panorama", panorama);
 
         while (true) {

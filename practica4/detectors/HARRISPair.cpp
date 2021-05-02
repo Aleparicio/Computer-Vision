@@ -55,8 +55,6 @@ void HARRISPair::getMatchesApplyNNRatio(const float nn_match_ratio) {
     vector<vector<DMatch>> nn_matches;
     matcher->knnMatch(desc1, desc2, nn_matches, 2);
 
-    std::cout << nn_matches.size() << std::endl;
-
     // Conservar emparejamiento si es mejor que el segundo más parecido
     applyNNRatio(nn_matches, nn_match_ratio);
 }

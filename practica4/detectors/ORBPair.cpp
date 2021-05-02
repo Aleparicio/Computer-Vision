@@ -4,7 +4,6 @@ int ORBPair::getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) {
     kpts.clear();
     Ptr<ORB> orb = ORB::create(nfeatures, scaleFactor, nlevels, edgeThreshold);
     orb->detectAndCompute(img, noArray(), kpts, desc);
-    std::cout << kpts.size() << std::endl;
     return (int)kpts.size();
 }
 

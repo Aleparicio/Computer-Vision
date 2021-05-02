@@ -5,8 +5,6 @@ int SIFTPair::getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) {
     kpts.clear();
     Ptr<SIFT> sift = SIFT::create(nfeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
     sift->detectAndCompute(img, noArray(), kpts, desc);
-
-    std::cout << kpts.size() << std::endl;
     return (int)kpts.size();
 }
 

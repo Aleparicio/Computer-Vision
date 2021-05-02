@@ -294,23 +294,23 @@ void doPanorama(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& img_panorama,
     // Find matches
     std::shared_ptr<Pair> pair;
     if (features_type == FeaturesType::AKAZE) {
-        std::cout << "akaze" << std::endl;
+        std::cout << "AKAZE" << std::endl;
         pair = std::make_shared<AKAZEPair>(img1_gray, img2_gray);
     } else if (features_type == FeaturesType::SIFT) {
-        std::cout << "sift" << std::endl;
+        std::cout << "SIFT" << std::endl;
         pair = std::make_shared<SIFTPair>(img1_gray, img2_gray);
 
 #ifdef HAVE_XFEATURES2D_NONFREE_H
     } else if (features_type == FeaturesType::SURF) {
-        std::cout << "surf" << std::endl;
+        std::cout << "SURF" << std::endl;
         pair = std::make_shared<SURFPair>(img1_gray, img2_gray);
 #endif
 
     } else if (features_type == FeaturesType::ORB) {
-        std::cout << "orb" << std::endl;
+        std::cout << "ORB" << std::endl;
         pair = std::make_shared<ORBPair>(img1_gray, img2_gray);
     } else if (features_type == FeaturesType::HARRIS) {
-        std::cout << "harris" << std::endl;
+        std::cout << "Harris" << std::endl;
         pair = std::make_shared<HARRISPair>(img1_gray, img2_gray);
     }
 

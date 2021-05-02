@@ -6,7 +6,6 @@ int SURFPair::getKeypoints(Mat& img, Mat& desc, vector<KeyPoint>& kpts) {
     Ptr<SURF> surf = SURF::create(hessianThreshold, nOctaves, nOctaveLayers);
     surf->detectAndCompute(img, noArray(), kpts, desc);
 
-    std::cout << kpts.size() << std::endl;
     return (int)kpts.size();
 }
 
