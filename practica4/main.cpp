@@ -139,19 +139,34 @@ static bool parseArgs(int argc, char** argv, Args& args) {
 }
 
 int main(int argc, char** argv) {
+    std::string output_name = "panorama.jpg";
+
+    // int screen_width = 4096, screen_height = 2160;
+    // int screen_width = 1920, screen_height = 1080;
+    int screen_width = 1920, screen_height = 1050;
+
+    cv::namedWindow("Matches", cv::WINDOW_NORMAL);
+    cv::resizeWindow("Matches", cv::Size(screen_width, screen_height / 2));
+    cv::moveWindow("Matches", 0, screen_height / 2 + 40);
+
+    cv::namedWindow("Panorama", cv::WINDOW_NORMAL);
+    cv::resizeWindow("Panorama", cv::Size(screen_width, screen_height / 2));
+    cv::moveWindow("Panorama", 0, 0);
+
+    // cv::waitKey(0);
+
     Args args;
     if (!parseArgs(argc, argv, args)) {
         return 1;
     }
 
-    /*cv::Mat intrinsic, distCoeffs;
-    calibrate_camera(intrinsic, distCoeffs);
-    cv::Mat undistorted_img1, img1 = cv::imread("../../images/chessboard/left01.jpg", cv::IMREAD_GRAYSCALE);
-    undistort_image(img1, undistorted_img1, intrinsic, distCoeffs);
+    // cv::Mat intrinsic, distCoeffs;
+    // calibrate_camera(intrinsic, distCoeffs);
+    // cv::Mat undistorted_img1, img1 = cv::imread("../../images/chessboard/left01.jpg", cv::IMREAD_GRAYSCALE);
+    // undistort_image(img1, undistorted_img1, intrinsic, distCoeffs);
 
-    cv::imshow("dsa", undistorted_img1);
-    cv::waitKey();*/
-
+    // cv::imshow("dsa", undistorted_img1);
+    // cv::waitKey();
 
     if (args.mode == Mode::IMAGES) {
         // Abrir imágenes
@@ -174,11 +189,24 @@ int main(int argc, char** argv) {
         cv::Mat panorama = orig_images[0];
         for (int i = 1; i < orig_images.size(); i++) {
             doPanorama(orig_images[i], panorama, panorama, args.features, args.nn_ratio, args.use_flann, args.blend, args.seam);
-            // doPanorama(panorama, orig_images[i], panorama, args.features, args.nn_ratio, args.use_flann, args.blend, args.seam);
             cv::imshow("Panorama", panorama);
-            cv::waitKey(0);
-        }
 
+            cv::resizeWindow("Panorama", cv::Size(screen_width, screen_height / 2));
+            cv::moveWindow("Panorama", 0, 0);
+
+            cv::resizeWindow("Matches", cv::Size(screen_width, screen_height / 2));
+            cv::moveWindow("Matches", 0, screen_height / 2 + 40);
+
+            int k = cv::waitKey(0);
+
+            if (k == 27) {
+                break;
+            } else if (k == 's') {
+                std::string name = imwriteSafe(output_name, panorama);
+                std::cout << "Guardada imagen: " << name << std::endl;
+                cv::waitKey(0);
+            }
+        }
     } else {
         // Capturar desde la cámara
         cv::VideoCapture cap;
@@ -192,20 +220,20 @@ int main(int argc, char** argv) {
         cv::Mat frame, panorama, new_panorama;
         cap >> frame;
 
-        cv::imshow("Frame", frame);
-        // cv::waitKey(0);
-
-        std::cout << frame.size() << std::endl;
-
         frame = frame(Rect(300, 0, frame.cols - 600, frame.rows - 90));
 
+        // cv::resize(frame, frame, cv::Size(), 0.5, 0.5);
+        std::cout << frame.rows << " " << frame.cols << std::endl;
         panorama = frame;
-        // panorama = frame(Rect(0, 0, frame.cols, frame.rows - 90));
 
         cv::imshow("Panorama", panorama);
-        // cv::waitKey(0);
 
         while (true) {
+            cv::resizeWindow("Panorama", cv::Size(screen_width, screen_height / 2));
+            cv::moveWindow("Panorama", 0, 0);
+
+            cv::resizeWindow("Matches", cv::Size(screen_width, screen_height / 2));
+            cv::moveWindow("Matches", 0, screen_height / 2 + 40);
 
             int k;
             if (args.mode == Mode::LIVE_AUTO) {
@@ -216,12 +244,17 @@ int main(int argc, char** argv) {
 
             if (k == 27) {
                 break;
+            } else if (k == 's') {
+                std::string name = imwriteSafe(output_name, panorama);
+                std::cout << "Guardada imagen: " << name << std::endl;
+                cv::waitKey(0);
             }
 
             // Capturar nueva imagen
             cap >> frame;
             if (frame.empty()) // end of video stream
                 break;
+            // cv::resize(frame, frame, cv::Size(), 0.5, 0.5);
 
             frame = frame(Rect(300, 0, frame.cols - 600, frame.rows - 90));
 

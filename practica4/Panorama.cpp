@@ -28,6 +28,7 @@ const cv::String& imwriteSafe(const cv::String& filename, cv::InputArray img, co
         throw 0;
 }
 
+// Camera calibration
 
 // Llena el vector imgs con imágenes cargadas de memoria para calibrar la cámara
 void fillImages(std::vector<cv::Mat>& imgs) {
@@ -63,10 +64,9 @@ void fillImages(std::vector<cv::Mat>& imgs) {
     imgs.push_back(img14);
 }
 
-
 // Devuelve los parámteros intrínsecos de la cámara y los coeficientes
-// de distorsión de la misma. Parámetros DE SALIDA 
-void calibrate_camera(cv::Mat& intrinsic, cv::Mat& distCoeffs){
+// de distorsión de la misma. Parámetros DE SALIDA
+void calibrate_camera(cv::Mat& intrinsic, cv::Mat& distCoeffs) {
 
     Size patternsize(9, 6); // Número de esquinas internas del tablero de ajedrez
     std::vector<cv::Mat> imagenes;
@@ -105,7 +105,7 @@ void calibrate_camera(cv::Mat& intrinsic, cv::Mat& distCoeffs){
     double rms = cv::calibrateCamera(object_points, image_points, imagenes[0].size(), intrinsic, distCoeffs, rvecs, tvecs);
 }
 
-void undistort_image(cv::Mat& img1, cv::Mat& undistorted_img1, cv::Mat& intrinsic, cv::Mat& distCoeffs){
+void undistort_image(cv::Mat& img1, cv::Mat& undistorted_img1, cv::Mat& intrinsic, cv::Mat& distCoeffs) {
     undistort(img1, undistorted_img1, intrinsic, distCoeffs);
 }
 
@@ -186,14 +186,6 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
 
     // Obtener máscaras iniciales para cada imágen (píxeles con información)
 
-    // cv::Mat mask_result1 = cv::Mat(img1.size(), CV_8UC1, cv::Scalar(255));
-    // cv::Mat mask_result2 = cv::Mat(img2.size(), CV_8UC1, cv::Scalar(255));
-
-    // cv::Mat mask_result1 = img1 > 0;
-    // cv::Mat mask_result2 = img2 > 0;
-    // cv::cvtColor(mask_result1, mask_result1, cv::COLOR_BGR2GRAY);
-    // cv::cvtColor(mask_result2, mask_result2, cv::COLOR_BGR2GRAY);
-
     std::vector<cv::Point2f> corners_result1;
     std::vector<cv::Point2f> corners_result2;
 
@@ -201,63 +193,21 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
     cv::Size result_size = cv::Size(xmax - xmin, ymax - ymin);
 
     cv::Mat result1, result2;
-    // cv::warpPerspective(img1, result1, translation * homography, result_size, cv::INTER_LINEAR, cv::BORDER_REFLECT);
     cv::warpPerspective(img1, result1, translation * homography, result_size);
-    // cv::warpPerspective(mask_result1, mask_result1, translation * homography, result_size);
     cv::perspectiveTransform(corners_img1, corners_result1, translation * homography);
 
-    // cv::warpPerspective(img2, result2, translation, result_size, cv::INTER_LINEAR, cv::BORDER_REFLECT);
     cv::warpPerspective(img2, result2, translation, result_size);
-    // cv::warpPerspective(mask_result2, mask_result2, translation, result_size);
     cv::perspectiveTransform(corners_img2, corners_result2, translation);
 
-    // cv::Mat mask_result1 = img1 > 0;
-    // cv::Mat mask_result2 = img2 > 0;
-    // cv::cvtColor(mask_result1, mask_result1, cv::COLOR_BGR2GRAY);
-    // cv::cvtColor(mask_result2, mask_result2, cv::COLOR_BGR2GRAY);
-
     cv::Mat mask_result1, mask_result2;
-
     cv::Mat result1_gray;
     cv::Mat result2_gray;
-
     cv::cvtColor(result1, result1_gray, cv::COLOR_BGR2GRAY);
     cv::cvtColor(result2, result2_gray, cv::COLOR_BGR2GRAY);
-
     cv::threshold(result1_gray, mask_result1, 0, 255, cv::THRESH_BINARY);
     cv::threshold(result2_gray, mask_result2, 0, 255, cv::THRESH_BINARY);
-    // cv::cvtColor(mask_result1, mask_result1, cv::COLOR_BGR2GRAY);
-    // cv::cvtColor(mask_result2, mask_result2, cv::COLOR_BGR2GRAY);
-
-    // cv::medianBlur(mask_result1, mask_result1, 5);
-    // cv::medianBlur(mask_result2, mask_result2, 5);
-
-    cv::Mat or_mask;
-    cv::bitwise_or(mask_result1, mask_result2, or_mask);
-
-    // imshow("Mascara 1", mask_result1);
-    // imshow("Mascara 2", mask_result2);
-    // imshow("Mascara 3", or_mask);
-    // imshow("Wrap 1", result1);
-    // imshow("Wrap 2", result2);
-    // cv::waitKey();
 
     // Guardar todo en listas
-
-    // cv::resize(mask_result1, mask_result1, result_size, 0, 0, cv::INTER_LINEAR_EXACT);
-    // cv::resize(mask_result2, mask_result2, result_size, 0, 0, cv::INTER_LINEAR_EXACT);
-    // cv::resize(result1, result1, result_size, 0, 0, cv::INTER_LINEAR_EXACT);
-    // cv::resize(result2, result2, result_size, 0, 0, cv::INTER_LINEAR_EXACT);
-
-    // cv::Mat resultt;
-    // resultt = result1.clone();
-    // result1 = result2.clone();
-    // result2 = resultt.clone();
-
-    // resultt = mask_result1.clone();
-    // mask_result1 = mask_result2.clone();
-    // mask_result2 = resultt.clone();
-
     std::vector<UMat> images;
     images.push_back(result1.getUMat(ACCESS_RW));
     images.push_back(result2.getUMat(ACCESS_RW));
@@ -278,24 +228,12 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
     if (seam_type != SeamType::NO) {
         std::shared_ptr<cv::detail::SeamFinder> seam_finder;
         if (seam_type == SeamType::VORONOI) {
-            // cv::detail::VoronoiSeamFinder seam_finder = cv::detail::VoronoiSeamFinder();
-            // seam_finder.find(images, corners, masks);
             seam_finder = std::make_shared<cv::detail::VoronoiSeamFinder>();
         } else if (seam_type == SeamType::DP_COLOR) {
-            // cv::detail::DpSeamFinder seam_finder = cv::detail::DpSeamFinder(cv::detail::DpSeamFinder::COLOR);
-            // seam_finder.find(images, corners, masks);
             seam_finder = std::make_shared<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
         }
         seam_finder->find(images, corners, masks);
     }
-
-    // cv::Mat dilated_mask, seam_mask;
-    // dilate(mask_result1, dilated_mask, Mat());
-    // resize(dilated_mask, seam_mask, mask_result1.size(), 0, 0, INTER_LINEAR_EXACT);
-    // mask_result1 = seam_mask & mask_result1;
-    // dilate(mask_result2, dilated_mask, Mat());
-    // resize(dilated_mask, seam_mask, mask_result2.size(), 0, 0, INTER_LINEAR_EXACT);
-    // mask_result2 = seam_mask & mask_result2;
 
     // Mezclar las dos imágenes
 
@@ -324,7 +262,6 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
             blender = std::make_shared<cv::detail::MultiBandBlender>(false, num_bands);
         } else {
             blender = std::make_shared<cv::detail::FeatherBlender>(0.0199999);
-            // blender = std::make_shared<cv::detail::Blender>();
         }
         Rect roi = cv::detail::resultRoi(corners, sizes);
         blender->prepare(roi);
@@ -342,7 +279,6 @@ cv::Mat warpImages(const cv::Mat& img1, const cv::Mat& img2, const cv::Mat& homo
                                             Point(erosion_size, erosion_size));
         erode(mask_result2, mask_result2, element);
         result = result1.clone();
-        // result1.copyTo(result, mask_result1);
         result2.copyTo(result, mask_result2);
     }
 
@@ -386,16 +322,16 @@ void doPanorama(const cv::Mat& img1, const cv::Mat& img2, cv::Mat& img_panorama,
     std::cout << "Núm matches: " << pair->matched1.size() << std::endl;
 
     // Mostrar keypoints y matches
-    cv::Mat img_kpts;
-    cv::drawKeypoints(img1, pair->kpts1, img_kpts);
-    cv::imshow("Keypoints 1", img_kpts);
-    cv::drawKeypoints(img2, pair->kpts2, img_kpts);
-    cv::imshow("Keypoints 2", img_kpts);
+    // cv::Mat img_kpts;
+    // cv::drawKeypoints(img1, pair->kpts1, img_kpts);
+    // cv::imshow("Keypoints 1", img_kpts);
+    // cv::drawKeypoints(img2, pair->kpts2, img_kpts);
+    // cv::imshow("Keypoints 2", img_kpts);
 
     cv::Mat img_matches;
     std::vector<cv::DMatch> matches = pair->getMatchArray();
     cv::drawMatches(img1, pair->matched1, img2, pair->matched2, matches, img_matches);
-    cv::imshow("Resultado", img_matches);
+    cv::imshow("Matches", img_matches);
 
     // cv::waitKey(0);
 
