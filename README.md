@@ -7,7 +7,12 @@
 # Descripción
 El repositorio contiene 4 proyectos relacionados con la visión por computador:
     
-    * Efectos: Implementa un conjunto de efectos visuales aplicados a imágenes obtenidas en vivo seleccionables mediante una interfaz gráfica. Detalles consultables en ![Informe pr1](doc/Informe_1.pdf)
+    * Efectos: Implementa un conjunto de efectos visuales aplicados a imágenes obtenidas en vivo seleccionables mediante una interfaz gráfica. Detalles consultables en [Informe pr1](doc/Informe_1.pdf)
+
+
+|Efecto CLAHE|Efecto Twirl|Efecto Posterize|
+|:---:|:---:|:---:|
+|![Efecto CLAHE](doc/pr1_1.png)|![Efecto Twirl](doc/pr1_2.png)|![Efecto Posterize](doc/pr1_3.png)|
 
 
 
