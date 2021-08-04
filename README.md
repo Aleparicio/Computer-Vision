@@ -26,27 +26,18 @@ El repositorio contiene 4 proyectos relacionados con la visión por computador:
 
 * Obtención del punto de fuga
 
-|:---:|
-|![Pasillo 1](doc/pr2_1.png)|
+![Pasillo 1](doc/pr2_1.png)
 
 * Reconocimiento de objetos
 
-|:---:|
-|![Reconocimiento de objetos](doc/pr3_1.png)|
+![Reconocimiento de objetos](doc/pr3_1.png)
 
 * Creación de panoramas
 
-|:---:|
-|![Panorama 1](doc/pr4_1.jpg)|
+![Panorama 1](doc/pr4_1.jpg)
 
 
 
-
-
-* Reconocimiento de objetos
-
-
-* Creación de panoramas
 
 
 # Compilación
