@@ -18,11 +18,32 @@ El repositorio contiene 4 proyectos relacionados con la visión por computador:
 
 # Resultados
 
+* Efectos
+
 |Efecto CLAHE|Efecto Twirl|Efecto Posterize|
 |:---:|:---:|:---:|
 |![Efecto CLAHE](doc/pr1_1.png)|![Efecto Twirl](doc/pr1_2.png)|![Efecto Posterize](doc/pr1_3.png)|
 
+* Obtención del punto de fuga
 
+|![Pasillo 1](doc/pr2_1.png)|![Pasillo 2](doc/pr2_2.png)|
+
+* Reconocimiento de objetos
+
+|![Reconocimiento de objetos](doc/pr3_1.png)|
+
+* Creación de panoramas
+
+|![Panorama 1](doc/pr4_1.jpg)|![Panorama 2](doc/pr4_2.jpg)|
+
+
+
+
+
+* Reconocimiento de objetos
+
+
+* Creación de panoramas
 
 
 # Compilación
